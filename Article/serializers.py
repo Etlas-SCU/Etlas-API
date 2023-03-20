@@ -7,6 +7,7 @@ from rest_framework import serializers
 class ArticlesSerializers(serializers.ModelSerializer):
     class Meta:
         model = Articles
-        fields = ['id','title','date','description']
+        fields = ['id','article_title','date','section']
+        depth = 1
 
         
