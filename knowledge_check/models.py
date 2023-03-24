@@ -13,11 +13,18 @@ class Choice(models.Model):
     def __str__(self):
         return self.choice_text
 
+
+LABEL_CHOICES = (
+    ('statue', 'statue'),
+    ('monument', 'monument'),
+    ('landmark', 'landmark'),
+)
+
 class Question(models.Model):
     """ Question model for the multiple choice questions """
 
     statement = models.CharField(max_length=200)
-    label = models.CharField(max_length=200)
+    label = models.CharField(max_length=200, choices=LABEL_CHOICES)
     image = models.ImageField(upload_to='questions_images/')
     correct_chocie = models.CharField(max_length=200)
     choices = models.ManyToManyField(Choice, related_name='choices')
