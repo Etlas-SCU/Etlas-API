@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'storages',
     'knowledge_check',
     'django_extensions',
+    'django_celery_results',
 ]
 
 MIDDLEWARE = [
@@ -166,3 +167,13 @@ AWS_S3_OBJECT_PARAMETERS = {
 # STATIC_URL = f"https://{AWS_STORAGE_BUCKET_NAME}.{AWS_S3_ENDPOINT}/"
 
 DEFAULT_FILE_STORAGE = 'api.storage_backends.MediaStorage'
+
+
+# CELERY SETTINGS
+
+CELERY_BROKER_URL = env('SERVER')
+CELERY_ACCEPT_CONTENT = ['application/json']
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_BACKEND = 'django-db'
+CELERY_TIMEZONE = 'Africa/Cairo'
