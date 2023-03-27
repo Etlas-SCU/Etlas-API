@@ -1,7 +1,8 @@
 from django.db import models
-from django.db.models.signals import pre_delete
+from django.db.models.signals import pre_delete, post_save
 from django.dispatch import receiver
 from django.core.files.storage import default_storage
+from .tasks import validate_question_task
 
 # Create your models here.
 
@@ -37,6 +38,15 @@ class Question(models.Model):
         default_storage.delete(self.image.name)
         super().delete(*args, **kwargs)
     
+@receiver(post_save, sender=Question)
+def validate_question(sender, instance, created, **kwargs):
+    """
+    Validate the question after it is created.
+    """
+    if created:
+        validate_question_task.apply_async(args=[instance.id], countdown=10)
+
+
 @receiver(pre_delete, sender=Question)
 def delete_image(sender, instance, **kwargs):
     """
