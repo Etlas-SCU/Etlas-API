@@ -9,6 +9,7 @@ class Section(models.Model):
 
 
 class Articles(models.Model):
+    image = models.ImageField(upload_to="articles_images/")
     section = models.ForeignKey(Section,on_delete=models.CASCADE,null=True)
     article_title = models.CharField(max_length=200)
     date = models.DateField()
