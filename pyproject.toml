@@ -11,6 +11,14 @@ django = "^4.1.7"
 django-environ = "^0.10.0"
 djangorestframework = "^3.14.0"
 drf-yasg = "^1.21.5"
+django-storages = "^1.13.2"
+pillow = "^9.4.0"
+boto3 = "^1.26.94"
+django-extensions = "^3.2.1"
+b2sdk = "^1.20.0"
+celery = "^5.2.7"
+redis = "^4.5.3"
+django-celery-results = "^2.5.0"
 
 
 [build-system]
