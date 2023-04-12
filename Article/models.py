@@ -10,9 +10,9 @@ from django.core.files.storage import default_storage
 
 
 class Articles(models.Model):
-    image = models.ImageField(upload_to="articles_images/")
     article_title = models.CharField(max_length=200)
     date = models.DateField()
+    image = models.ImageField(upload_to="articles_images/")
 
 
     def delete(self, *args, **kwargs):
