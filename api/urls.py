@@ -39,4 +39,5 @@ urlpatterns = [
     path("api/",include("Article.urls")),
     path("api/",include("knowledge_check.urls")),
     path("users/",include("users.urls")),
+    path("auth/", include("authentication.urls")),
 ]
