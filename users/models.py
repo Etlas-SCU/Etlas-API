@@ -3,7 +3,7 @@ from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, Permis
 from django.core.files.storage import default_storage
 from django.db.models.signals import pre_delete
 from django.dispatch import receiver
-
+import uuid
 
 # Create your models here.
 
@@ -45,6 +45,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_staff = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    email_verification_token = models.UUIDField(default=uuid.uuid4, editable=False)
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['full_name']
