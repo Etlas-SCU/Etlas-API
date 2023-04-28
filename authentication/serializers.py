@@ -1,5 +1,7 @@
 from rest_framework import serializers
 from users.models import User
+from django.contrib import auth
+from rest_framework.exceptions import AuthenticationFailed
 
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(max_length=255, min_length=8, write_only=True, required=True)
@@ -38,3 +40,55 @@ class EmailVerficationSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['token']
+
+class LoginSerializer(serializers.ModelSerializer):
+    email = serializers.CharField(max_length=255, required=True)
+    password = serializers.CharField(max_length=255, write_only=True, required=True)
+    tokens = serializers.SerializerMethodField()
+
+    def get_tokens(self, obj):
+
+        user = User.objects.get(email = obj['email'])
+
+        return{
+            'access' : user.tokens()['access'],
+            'refresh' : user.tokens()['refresh'],
+        }
+    
+    class Meta:
+        model = User
+        fields = ['id', 'email', 'password', 'full_name', 'address', 'phone_number', 'image', 'best_score', 'tokens']
+        extra_kwargs = {
+            'best_score': {'read_only': True},
+            'address': {'read_only': True},
+            'phone_number': {'read_only': True},
+            'image': {'read_only': True},
+            'full_name': {'read_only': True},
+        }
+
+
+    def validate(self, attrs):
+        email = attrs.get('email', '')
+        password = attrs.get('password', '')
+
+        user = auth.authenticate(email=email, password=password)
+
+        if not user:
+            raise AuthenticationFailed('Invalid credentials, try again')
+        
+        if not user.is_active:
+            raise AuthenticationFailed('Account disabled, contact admin')
+        
+        if not user.is_verified:
+            raise AuthenticationFailed('Email is not verified')
+        
+        return {
+            'id': user.id,
+            'full_name': user.full_name,
+            'email': user.email,
+            'address': user.address,
+            'phone_number': user.phone_number,
+            'image': user.image,
+            'best_score': user.best_score,
+            'tokens': user.tokens
+        }

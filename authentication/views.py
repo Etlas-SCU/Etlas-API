@@ -1,6 +1,6 @@
 from rest_framework import viewsets, status
 from users.models import User
-from .serializers import RegisterSerializer, EmailVerficationSerializer
+from .serializers import RegisterSerializer, EmailVerficationSerializer, LoginSerializer
 from rest_framework.response import Response
 from django.contrib.sites.shortcuts import get_current_site
 from django.urls import reverse
@@ -60,3 +60,14 @@ class VerifyEmailView(viewsets.ModelViewSet):
         except (ValueError, User.DoesNotExist):
             return Response({'error': 'Invalid token'}, status=status.HTTP_400_BAD_REQUEST)
             return redirect(f"{env('WEB_ROOT_URL')}/invalid_token")
+
+
+class LoginView(viewsets.ModelViewSet):
+    queryset = User.objects.all()
+    serializer_class = LoginSerializer
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
