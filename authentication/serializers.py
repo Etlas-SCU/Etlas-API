@@ -31,3 +31,10 @@ class RegisterSerializer(serializers.ModelSerializer):
             'best_score': {'read_only': True},
         }
         
+
+class EmailVerficationSerializer(serializers.ModelSerializer):
+    token = serializers.CharField(max_length=255, write_only=True, required=True)
+
+    class Meta:
+        model = User
+        fields = ['token']

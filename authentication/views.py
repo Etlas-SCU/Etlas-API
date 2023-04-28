@@ -1,6 +1,6 @@
 from rest_framework import viewsets, status
 from users.models import User
-from .serializers import RegisterSerializer
+from .serializers import RegisterSerializer, EmailVerficationSerializer
 from rest_framework.response import Response
 from django.contrib.sites.shortcuts import get_current_site
 from django.urls import reverse
@@ -8,6 +8,8 @@ from django.shortcuts import redirect
 from .tasks import verification_mail
 import uuid
 import environ
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
 
 env = environ.Env()
 
@@ -40,7 +42,11 @@ class RegisterView(viewsets.ModelViewSet):
 
 class VerifyEmailView(viewsets.ModelViewSet):
     queryset = User.objects.all()
-    serializer_class = RegisterSerializer
+    serializer_class = EmailVerficationSerializer
+
+    token_param_config = openapi.Parameter('token', in_=openapi.IN_QUERY, description='Description', type=openapi.TYPE_STRING)
+
+    @swagger_auto_schema(manual_parameters=[token_param_config])
 
     def retrieve(self, request, *args, **kwargs):
         token = request.GET.get('token')
@@ -49,6 +55,8 @@ class VerifyEmailView(viewsets.ModelViewSet):
             if not user.is_verified:
                 user.is_verified = True
                 user.save()
+            return Response({'email': 'Successfully activated'}, status=status.HTTP_200_OK)
             return redirect(f"{env('WEB_ROOT_URL')}/signin")
         except (ValueError, User.DoesNotExist):
+            return Response({'error': 'Invalid token'}, status=status.HTTP_400_BAD_REQUEST)
             return redirect(f"{env('WEB_ROOT_URL')}/invalid_token")
