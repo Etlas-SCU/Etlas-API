@@ -4,6 +4,7 @@ from django.core.files.storage import default_storage
 from django.db.models.signals import pre_delete
 from django.dispatch import receiver
 import uuid
+from rest_framework_simplejwt.tokens import RefreshToken
 
 # Create your models here.
 
@@ -56,7 +57,11 @@ class User(AbstractBaseUser, PermissionsMixin):
         return self.email
     
     def tokens(self):
-        return ''
+        refresh = RefreshToken.for_user(self)
+        return {
+            'refresh': str(refresh),
+            'access': str(refresh.access_token),
+        }
     
     def delete(self, *args, **kwargs):
         # Delete the image file from Backblaze B2 bucket
