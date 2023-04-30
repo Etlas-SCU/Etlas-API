@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'Article',
     'drf_yasg',
+    "tours"
 ]
 
 MIDDLEWARE = [

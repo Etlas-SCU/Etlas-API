@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from .models import Tours,Section,Image
 
-class SectionSerializers(serializers.ModelSerializer):
+class TourSectionSerializers(serializers.ModelSerializer):
     class Meta:
         model = Section
         fields = '__all__'
@@ -16,7 +16,7 @@ class ImageSerializers(serializers.ModelSerializer):
 
 
 class ToursSerializers(serializers.ModelSerializer):
-    section = SectionSerializers(many=True,read_only=True)
+    section = TourSectionSerializers(many=True,read_only=True)
     image = ImageSerializers(many=True,read_only=True)
     class Meta:
         model = Tours
