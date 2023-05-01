@@ -3,7 +3,7 @@ from django.core.mail import send_mail
 from django.conf import settings
 
 @shared_task(bind=True)
-def verification_mail(self, data):
+def send_email(self, data):
     send_mail(
         subject = data['email_subject'],
         message= data['email_body'],

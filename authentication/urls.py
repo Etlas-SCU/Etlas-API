@@ -15,10 +15,18 @@ login = views.LoginView.as_view({
     'post': 'create',
 })
 
+password_reset = views.RequestPasswordResetEmailView.as_view({
+    'post': 'create',
+})
+
+
+
 urlpatterns = [
     path('register/', register, name="register"),
     path('email_verify/', verify, name="email_verify"),
     path('login/', login, name="login"),
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
-
+    path('request-reset-email/', password_reset, name="request-reset-email"),
+    path('password-reset/<uidb64>/<token>/', views.PasswordTokenCheckView.as_view(), name="password-reset-confirm"),
+    path('password-reset-complete/', views.SetNewPasswordView.as_view(), name="password-reset-complete"),
 ]
