@@ -15,9 +15,12 @@ from django.utils.encoding import smart_str, smart_bytes, DjangoUnicodeDecodeErr
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.exceptions import AuthenticationFailed
-
+from django.http import HttpResponsePermanentRedirect
 
 env = environ.Env()
+
+class CustomRedirect(HttpResponsePermanentRedirect):
+    allowed_schemes = [env('APP_SCHEME'), 'http', 'https']
 
 # Create your views here.
 
@@ -32,13 +35,15 @@ class RegisterView(viewsets.ModelViewSet):
         serializer.save()
         user_data = serializer.data
 
+        redirect_url = request.data.get('redirect_url', '')
+
         user = User.objects.get(email=user_data['email'])
         token = user.email_verification_token
         current_site = get_current_site(request).domain
         relative_link = reverse('email_verify')
         absurl = 'http://'+current_site+relative_link+"?token="+str(token)
         email_body = 'Hi '+ user.full_name + \
-            ' Use the link below to verify your email \n' + absurl
+            ' Use the link below to verify your email \n' + absurl + "&redirect_url=" + redirect_url
         data = {'email_body': email_body, 'to_email': user.email,
                 'email_subject': 'Verify your email'}
 
@@ -56,16 +61,28 @@ class VerifyEmailView(viewsets.ModelViewSet):
 
     def retrieve(self, request, *args, **kwargs):
         token = request.GET.get('token')
+        redirect_url = request.GET.get('redirect_url', '')
+        print(token)
         try:
             user = User.objects.get(email_verification_token=uuid.UUID(token))
             if not user.is_verified:
                 user.is_verified = True
                 user.save()
+
+            if len(redirect_url) > 3:
+                return CustomRedirect(f"{redirect_url}?email=Successfully activated")
+            else:
+                return CustomRedirect(f"{env('WEB_ROOT_URL')}/signin?email=Successfully activated")
+            
             return Response({'email': 'Successfully activated'}, status=status.HTTP_200_OK)
-            return redirect(f"{env('WEB_ROOT_URL')}/signin")
+            
         except (ValueError, User.DoesNotExist):
+            if len(redirect_url) > 3:
+                return CustomRedirect(f"{redirect_url}?token=Invalid token")
+            else:
+                return CustomRedirect(f"{env('WEB_ROOT_URL')}/invalid_token")
+
             return Response({'error': 'Invalid token'}, status=status.HTTP_400_BAD_REQUEST)
-            return redirect(f"{env('WEB_ROOT_URL')}/invalid_token")
 
 
 class LoginView(viewsets.ModelViewSet):
@@ -87,6 +104,7 @@ class RequestPasswordResetEmailView(viewsets.ModelViewSet):
         serializer = self.serializer_class(data=request.data)
         
         email = request.data.get('email', '')
+        redirect_url = request.data.get('redirect_url', '')
 
         if User.objects.filter(email=email).exists():
             user = User.objects.get(email=email)
@@ -96,9 +114,8 @@ class RequestPasswordResetEmailView(viewsets.ModelViewSet):
                 
                 current_site = get_current_site(request=request).domain
                 relativeLink = reverse('password-reset-confirm', kwargs={'uidb64': uidb64, 'token': token})
-                absurl = 'https://'+current_site + relativeLink
-                
-                email_body = 'Hello, \nUse link below to reset your password\n' + absurl
+                absurl = 'http://'+current_site + relativeLink
+                email_body = 'Hello, \nUse link below to reset your password\n' + absurl + "?redirect_url=" + redirect_url
                 data = {'email_body': email_body, 'to_email': user.email, 'email_subject': 'Reset your passsword'}
                 
                 send_email.delay(data)
@@ -114,11 +131,23 @@ class PasswordTokenCheckView(views.APIView):
     
     def get(self, request, uidb64, token):
         try:
+            redirect_url = request.GET.get('redirect_url', '')
+            print(redirect_url)
             id = smart_str(urlsafe_base64_decode(uidb64))
             user = User.objects.get(id=id)
 
             if not PasswordResetTokenGenerator().check_token(user, token):
+                if len(redirect_url) > 3:
+                    return CustomRedirect(f"{redirect_url}?token_valid=False")
+                else:
+                    return CustomRedirect(f"{env('WEB_ROOT_URL')}/invalid_token?token_valid=False")
+
                 return Response({'error': 'Token is not valid, please request a new one'}, status=status.HTTP_401_UNAUTHORIZED)
+            
+            if len(redirect_url) > 3:
+                return CustomRedirect(f"{redirect_url}?token_valid=True&message=Credentials Valid&uidb64={uidb64}&token={token}")
+            else:
+                return CustomRedirect(f"{env('WEB_ROOT_URL')}/reset_password?token_valid=True&message=Credentials Valid&uidb64={uidb64}&token={token}")
             
             return Response({'success': True, 'message': 'Credentials Valid', 'uidb64': uidb64, 'token': token}, status=status.HTTP_200_OK)
         
