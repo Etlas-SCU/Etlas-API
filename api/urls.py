@@ -40,4 +40,5 @@ urlpatterns = [
     path("api/",include("knowledge_check.urls")),
     path("users/",include("users.urls")),
     path("auth/", include("authentication.urls")),
+    path("social-auth/", include("social_auth.urls")),
 ]
