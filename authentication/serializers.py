@@ -10,6 +10,7 @@ from rest_framework_simplejwt.tokens import RefreshToken, TokenError
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(max_length=255, min_length=8, write_only=True, required=True)
     confirm_password = serializers.CharField(max_length=255, min_length=8, write_only=True, required=True)
+    redirect_url = serializers.CharField(max_length=500, required=False, write_only=True)
 
     def validate(self, data):
         
@@ -32,7 +33,7 @@ class RegisterSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = User
-        fields = ['id', 'email', 'full_name', 'password', 'confirm_password', 'address', 'phone_number', 'image', 'best_score']
+        fields = ['id', 'email', 'full_name', 'password', 'confirm_password', 'address', 'phone_number', 'image', 'best_score', 'redirect_url']
         extra_kwargs = {
             'best_score': {'read_only': True},
         }
@@ -105,6 +106,7 @@ class LoginSerializer(serializers.ModelSerializer):
 
 class RequestPasswordResetEmailSerializer(serializers.Serializer):
     email = serializers.EmailField(min_length=2)
+    redirect_url = serializers.CharField(max_length=500, required=False)
 
     class Meta:
         fields = ['email']
