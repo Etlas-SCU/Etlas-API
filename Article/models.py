@@ -13,6 +13,7 @@ class Articles(models.Model):
     article_title = models.CharField(max_length=200)
     date = models.DateField()
     image = models.ImageField(upload_to="articles_images/")
+    description = models.TextField()
 
 
     def delete(self, *args, **kwargs):
