@@ -8,6 +8,7 @@ from django.core.files.storage import default_storage
 class Tours(models.Model):
     title = models.CharField(max_length=200)
     rating = models.SmallIntegerField()
+    description = models.TextField()
 
 
 
