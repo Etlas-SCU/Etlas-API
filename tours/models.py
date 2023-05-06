@@ -5,21 +5,19 @@ from django.core.files.storage import default_storage
 # Create your models here.
 
 
-class Tours(models.Model):
-    title = models.CharField(max_length=200)
-    rating = models.SmallIntegerField()
+class Tour(models.Model):
+    title = models.CharField(max_length=100)
     description = models.TextField()
 
 
-
-class Section(models.Model):
-    tour = models.ForeignKey(Tours,on_delete=models.CASCADE)
-    section_title = models.CharField(max_length=200)
+class TourSection(models.Model):
+    title = models.CharField(max_length=100)
     description = models.TextField()
+    tours = models.ManyToManyField(Tour, related_name='sections')
 
 
 class Image(models.Model):
-    tour = models.ForeignKey(Tours,on_delete=models.CASCADE)
+    tour = models.ForeignKey(Tour, on_delete=models.CASCADE,related_name='images')
     image = models.ImageField(upload_to="tours_images/")
     def delete(self, *args, **kwargs):
         # Delete the image file from Backblaze B2 bucket
@@ -28,7 +26,7 @@ class Image(models.Model):
 
 
 
-@receiver(pre_delete, sender=Tours)
+@receiver(pre_delete, sender=Tour)
 def delete_image(sender, instance, **kwargs):
     """
     Delete the image file from Backblaze B2 bucket when the instance of the model

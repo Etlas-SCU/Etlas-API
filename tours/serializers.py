@@ -1,26 +1,24 @@
 from rest_framework import serializers
-from .models import Tours,Section,Image
-
-class TourSectionSerializers(serializers.ModelSerializer):
-    class Meta:
-        model = Section
-        fields = '__all__'
-
-
+from .models import Tour,TourSection,Image
 
 class ImageSerializers(serializers.ModelSerializer):
     class Meta:
         model = Image
-        fields = '__all__'
+        fields = ['id','image']
 
 
-
-class ToursSerializers(serializers.ModelSerializer):
-    section = TourSectionSerializers(many=True,read_only=True)
-    image = ImageSerializers(many=True,read_only=True)
+class TourSectionSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Tours
-        fields = '__all__'
-        depth = 1
+        model = TourSection
+        fields = ['id', 'title', 'description']
+
+
+
+class TourSerializer(serializers.ModelSerializer):
+    sections = TourSectionSerializer(many = True)
+    images = ImageSerializers(many=True, read_only=True)
+    class Meta:
+        model = Tour
+        fields = ['id', 'title', 'description','sections','images']
 
 
