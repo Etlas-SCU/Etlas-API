@@ -31,8 +31,8 @@ logout = views.LogoutView.as_view({
 
 urlpatterns = [
     path('register/', register, name="register"),
-    path('email_verify/', verify, name="email_verify"),
-    path('request_verify_otp/', request_verify_otp, name="request_verify_otp"),
+    path('email-verify/', verify, name="email-verify"),
+    path('request-verify-otp/', request_verify_otp, name="request-verify-otp"),
     path('login/', login, name="login"),
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('request-reset-email/', password_reset, name="request-reset-email"),
