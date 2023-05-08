@@ -1,6 +1,6 @@
 from rest_framework import viewsets, status, views, generics
-from users.models import User
-from .serializers import RegisterSerializer, EmailVerficationSerializer, LoginSerializer, RequestPasswordResetEmailSerializer, SetNewPasswordSerializer, LogoutSerializer
+from users.models import User, OTP
+from .serializers import RegisterSerializer, EmailVerficationSerializer, LoginSerializer, RequestPasswordResetEmailSerializer, SetNewPasswordSerializer, LogoutSerializer, ResendEmailVerificationSerializer
 from rest_framework.response import Response
 from django.contrib.sites.shortcuts import get_current_site
 from django.urls import reverse
@@ -16,6 +16,9 @@ from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.exceptions import AuthenticationFailed
 from django.http import HttpResponsePermanentRedirect
+import random, datetime
+from django.utils import timezone
+
 
 env = environ.Env()
 
@@ -35,15 +38,12 @@ class RegisterView(viewsets.ModelViewSet):
         serializer.save()
         user_data = serializer.data
 
-        redirect_url = request.data.get('redirect_url', '')
-
         user = User.objects.get(email=user_data['email'])
-        token = user.email_verification_token
-        current_site = get_current_site(request).domain
-        relative_link = reverse('email_verify')
-        absurl = 'http://'+current_site+relative_link+"?token="+str(token)
+        otp = OTP.objects.create(user=user, otp=random.randint(100000, 999999))
+        otp.save() 
+
         email_body = 'Hi '+ user.full_name + \
-            ' Use the link below to verify your email \n' + absurl + "&redirect_url=" + redirect_url
+            ' Use the OTP below to verify your email \n' + str(otp.otp)
         data = {'email_body': email_body, 'to_email': user.email,
                 'email_subject': 'Verify your email'}
 
@@ -55,34 +55,62 @@ class VerifyEmailView(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = EmailVerficationSerializer
 
-    token_param_config = openapi.Parameter('token', in_=openapi.IN_QUERY, description='Description', type=openapi.TYPE_STRING)
+    def create(self, request, *args, **kwargs):
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
 
-    @swagger_auto_schema(manual_parameters=[token_param_config])
-
-    def retrieve(self, request, *args, **kwargs):
-        token = request.GET.get('token')
-        redirect_url = request.GET.get('redirect_url', '')
-        print(token)
+        otp = serializer.validated_data['otp']
         try:
-            user = User.objects.get(email_verification_token=uuid.UUID(token))
-            if not user.is_verified:
+            main_otp = OTP.objects.get(otp=otp)
+            user = main_otp.user
+            if user.is_verified:
+                return Response({'error': 'User already verified'}, status=status.HTTP_400_BAD_REQUEST)
+
+            time = user.otp.created_at + datetime.timedelta(minutes=5)
+            current = timezone.now()
+            if current > time:
+                return Response({'error': 'OTP expired, request another one'}, status=status.HTTP_400_BAD_REQUEST)
+            else:
                 user.is_verified = True
+                user.otp.delete()
                 user.save()
 
-            if len(redirect_url) > 3:
-                return CustomRedirect(f"{redirect_url}?email=Successfully activated")
-            else:
-                return CustomRedirect(f"{env('WEB_ROOT_URL')}/signin?email=Successfully activated")
-            
-            return Response({'email': 'Successfully activated'}, status=status.HTTP_200_OK)
-            
-        except (ValueError, User.DoesNotExist):
-            if len(redirect_url) > 3:
-                return CustomRedirect(f"{redirect_url}?token=Invalid token")
-            else:
-                return CustomRedirect(f"{env('WEB_ROOT_URL')}/invalid_token")
+                return Response({'success': 'User verified successfully'}, status=status.HTTP_200_OK)
 
-            return Response({'error': 'Invalid token'}, status=status.HTTP_400_BAD_REQUEST)
+        except (ValueError, User.DoesNotExist, OTP.DoesNotExist):
+            return Response({'error': 'Invalid OTP'}, status=status.HTTP_400_BAD_REQUEST)
+        
+
+class RequestAnotherVerificationOTPView(viewsets.ModelViewSet):
+    queryset = User.objects.all()
+    serializer_class = ResendEmailVerificationSerializer
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        email = serializer.validated_data['email']
+        try:
+            user = User.objects.get(email=email)
+            if user.is_verified:
+                return Response({'error': 'User already verified'}, status=status.HTTP_400_BAD_REQUEST)
+            if hasattr(user, 'otp'):
+                user.otp.delete()
+                user.save()
+            otp = OTP.objects.create(user=user, otp=random.randint(100000, 999999))
+            otp.save()
+
+            email_body = 'Hi '+ user.full_name + \
+                ' Use the OTP below to verify your email \n' + str(otp.otp)
+            data = {'email_body': email_body, 'to_email': user.email,
+                    'email_subject': 'Verify your email'}
+            
+            send_email.delay(data)
+
+            return Response({'success': 'OTP sent successfully'}, status=status.HTTP_200_OK)
+
+        except User.DoesNotExist:
+            return Response({'error': 'User with given email does not exist'}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class LoginView(viewsets.ModelViewSet):

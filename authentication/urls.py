@@ -8,7 +8,11 @@ register = views.RegisterView.as_view({
 })
 
 verify = views.VerifyEmailView.as_view({
-    'get': 'retrieve',
+    'post': 'create',
+})
+
+request_verify_otp = views.RequestAnotherVerificationOTPView.as_view({
+    'post': 'create',
 })
 
 login = views.LoginView.as_view({
@@ -28,6 +32,7 @@ logout = views.LogoutView.as_view({
 urlpatterns = [
     path('register/', register, name="register"),
     path('email_verify/', verify, name="email_verify"),
+    path('request_verify_otp/', request_verify_otp, name="request_verify_otp"),
     path('login/', login, name="login"),
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('request-reset-email/', password_reset, name="request-reset-email"),
