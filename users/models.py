@@ -50,7 +50,6 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_staff = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    email_verification_token = models.UUIDField(default=uuid.uuid4, editable=False)
     auth_provider = models.CharField(max_length=255, blank=False, null=False, default=AUTH_PROVIDERS.get('email'))
 
     USERNAME_FIELD = 'email'
@@ -81,3 +80,13 @@ def delete_image(sender, instance, **kwargs):
     is deleted.
     """
     default_storage.delete(instance.image.name)
+
+
+class OTP(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    otp = models.CharField(max_length=6)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.otp
+    
