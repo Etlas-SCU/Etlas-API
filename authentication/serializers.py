@@ -110,15 +110,14 @@ class LoginSerializer(serializers.ModelSerializer):
 
 class RequestPasswordResetEmailSerializer(serializers.Serializer):
     email = serializers.EmailField(min_length=2)
-    redirect_url = serializers.CharField(max_length=500, required=False)
 
     class Meta:
         fields = ['email']
 
 class SetNewPasswordSerializer(serializers.Serializer):
-    password = serializers.CharField(min_length=8, max_length=255, write_only=True)
-    token = serializers.CharField(min_length=1, write_only=True)
-    uidb64 = serializers.CharField(min_length=1, write_only=True)
+    password = serializers.CharField(min_length=8, max_length=255, write_only=True, required=True)
+    token = serializers.CharField(min_length=1, write_only=True, required=True)
+    uidb64 = serializers.CharField(min_length=1, write_only=True, required=True)
 
     class Meta:
         fields = ['password', 'token', 'uidb64']

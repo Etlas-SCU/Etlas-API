@@ -1,29 +1,14 @@
-from rest_framework import viewsets, status, views, generics
+from rest_framework import viewsets, status, generics
 from users.models import User, OTP
 from .serializers import RegisterSerializer, EmailVerficationSerializer, LoginSerializer, RequestPasswordResetEmailSerializer, SetNewPasswordSerializer, LogoutSerializer, ResendEmailVerificationSerializer
 from rest_framework.response import Response
-from django.contrib.sites.shortcuts import get_current_site
-from django.urls import reverse
-from django.shortcuts import redirect
 from .tasks import send_email
-import uuid
-import environ
-from drf_yasg.utils import swagger_auto_schema
-from drf_yasg import openapi
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
-from django.utils.encoding import smart_str, smart_bytes, DjangoUnicodeDecodeError
-from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
+from django.utils.encoding import smart_bytes
+from django.utils.http import urlsafe_base64_encode
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.exceptions import AuthenticationFailed
-from django.http import HttpResponsePermanentRedirect
 import random, datetime
 from django.utils import timezone
-
-
-env = environ.Env()
-
-class CustomRedirect(HttpResponsePermanentRedirect):
-    allowed_schemes = [env('APP_SCHEME'), 'http', 'https']
 
 # Create your views here.
 
@@ -130,58 +115,65 @@ class RequestPasswordResetEmailView(viewsets.ModelViewSet):
 
     def create(self, request, *args, **kwargs):
         serializer = self.serializer_class(data=request.data)
-        
-        email = request.data.get('email', '')
-        redirect_url = request.data.get('redirect_url', '')
+        serializer.is_valid(raise_exception=True)
+
+        email = serializer.validated_data['email']
 
         if User.objects.filter(email=email).exists():
             user = User.objects.get(email=email)
-            if user.auth_provider == "email":
-                uidb64 = urlsafe_base64_encode(smart_bytes(user.id))
-                token = PasswordResetTokenGenerator().make_token(user)
-                
-                current_site = get_current_site(request=request).domain
-                relativeLink = reverse('password-reset-confirm', kwargs={'uidb64': uidb64, 'token': token})
-                absurl = 'http://'+current_site + relativeLink
-                email_body = 'Hello, \nUse link below to reset your password\n' + absurl + "?redirect_url=" + redirect_url
-                data = {'email_body': email_body, 'to_email': user.email, 'email_subject': 'Reset your passsword'}
-                
-                send_email.delay(data)
-                return Response({'success': 'We have sent you a link to reset your password'}, status=status.HTTP_200_OK)
-            else:
+            if user.auth_provider != 'email':
                 return Response({'error': 'Please continue your login using ' + user.auth_provider}, status=status.HTTP_400_BAD_REQUEST)
-        
+            
+            if not user.is_verified:
+                return Response({'error': 'Please verify your email first'}, status=status.HTTP_400_BAD_REQUEST)
+
+            if hasattr(user, 'otp'):
+                user.otp.delete()
+                user.save()
+
+            opt = OTP.objects.create(user=user, otp=random.randint(100000, 999999))
+            opt.save()
+
+            email_body = 'Hello, \nUse OTP below to reset your password\n' + str(opt.otp)
+            data = {'email_body': email_body, 'to_email': user.email, 'email_subject': 'Reset your passsword'}
+
+            send_email.delay(data)
+
+            return Response({'success': 'We have sent you an OTP to reset your password'}, status=status.HTTP_200_OK)
         else:
             return Response({'error': 'This email does not exist'}, status=status.HTTP_400_BAD_REQUEST)
-    
+        
 
-class PasswordTokenCheckView(views.APIView):
-    
-    def get(self, request, uidb64, token):
+class CheckResetPasswordOTPView(viewsets.ModelViewSet):
+    queryset = User.objects.all()
+    serializer_class = EmailVerficationSerializer
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        otp = serializer.validated_data['otp']
         try:
-            redirect_url = request.GET.get('redirect_url', '')
-            print(redirect_url)
-            id = smart_str(urlsafe_base64_decode(uidb64))
-            user = User.objects.get(id=id)
-
-            if not PasswordResetTokenGenerator().check_token(user, token):
-                if len(redirect_url) > 3:
-                    return CustomRedirect(f"{redirect_url}?token_valid=False")
-                else:
-                    return CustomRedirect(f"{env('WEB_ROOT_URL')}/invalid_token?token_valid=False")
-
-                return Response({'error': 'Token is not valid, please request a new one'}, status=status.HTTP_401_UNAUTHORIZED)
+            main_otp = OTP.objects.get(otp=otp)
+            user = main_otp.user
             
-            if len(redirect_url) > 3:
-                return CustomRedirect(f"{redirect_url}?token_valid=True&message=Credentials Valid&uidb64={uidb64}&token={token}")
-            else:
-                return CustomRedirect(f"{env('WEB_ROOT_URL')}/reset_password?token_valid=True&message=Credentials Valid&uidb64={uidb64}&token={token}")
+            time = user.otp.created_at + datetime.timedelta(minutes=5)
+            current = timezone.now()
+            if current > time:
+                return Response({'error': 'OTP expired, request another one'}, status=status.HTTP_400_BAD_REQUEST)
             
-            return Response({'success': True, 'message': 'Credentials Valid', 'uidb64': uidb64, 'token': token}, status=status.HTTP_200_OK)
-        
-        except DjangoUnicodeDecodeError:
-            return Response({'error': 'Token is not valid, please request a new one'}, status=status.HTTP_401_UNAUTHORIZED)
-        
+            user.otp.delete()
+            user.save()
+
+            uidb64 = urlsafe_base64_encode(smart_bytes(user.id))
+            token = PasswordResetTokenGenerator().make_token(user)
+
+            return Response({'success': 'OTP verified successfully', 'uidb64': uidb64, 'token': token}, status=status.HTTP_200_OK)
+
+        except (ValueError, User.DoesNotExist, OTP.DoesNotExist):
+            return Response({'error': 'Invalid OTP'}, status=status.HTTP_400_BAD_REQUEST)
+
+
 class SetNewPasswordView(generics.GenericAPIView):
     serializer_class = SetNewPasswordSerializer
 
