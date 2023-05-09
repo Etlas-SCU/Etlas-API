@@ -10,7 +10,6 @@ from rest_framework_simplejwt.tokens import RefreshToken, TokenError
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(max_length=255, min_length=8, write_only=True, required=True)
     confirm_password = serializers.CharField(max_length=255, min_length=8, write_only=True, required=True)
-    redirect_url = serializers.CharField(max_length=500, required=False, write_only=True)
 
     def validate(self, data):
         
@@ -33,18 +32,23 @@ class RegisterSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = User
-        fields = ['id', 'email', 'full_name', 'password', 'confirm_password', 'address', 'phone_number', 'image', 'best_score', 'redirect_url']
+        fields = ['id', 'email', 'full_name', 'password', 'confirm_password', 'address', 'phone_number', 'image', 'best_score']
         extra_kwargs = {
             'best_score': {'read_only': True},
         }
         
 
-class EmailVerficationSerializer(serializers.ModelSerializer):
-    token = serializers.CharField(max_length=255, write_only=True, required=True)
+class EmailVerficationSerializer(serializers.Serializer):
+    otp = serializers.CharField(max_length=6, min_length=6, write_only=True, required=True)
 
     class Meta:
-        model = User
-        fields = ['token']
+        fields = ['otp']
+
+class ResendEmailVerificationSerializer(serializers.Serializer):
+    email = serializers.EmailField(min_length=2, required=True)
+
+    class Meta:
+        fields = ['email']
 
 class LoginSerializer(serializers.ModelSerializer):
     email = serializers.CharField(max_length=255, required=True)
@@ -106,20 +110,24 @@ class LoginSerializer(serializers.ModelSerializer):
 
 class RequestPasswordResetEmailSerializer(serializers.Serializer):
     email = serializers.EmailField(min_length=2)
-    redirect_url = serializers.CharField(max_length=500, required=False)
 
     class Meta:
         fields = ['email']
 
 class SetNewPasswordSerializer(serializers.Serializer):
-    password = serializers.CharField(min_length=8, max_length=255, write_only=True)
-    token = serializers.CharField(min_length=1, write_only=True)
-    uidb64 = serializers.CharField(min_length=1, write_only=True)
+    password = serializers.CharField(min_length=8, max_length=255, write_only=True, required=True)
+    confirm_password = serializers.CharField(min_length=8, max_length=255, write_only=True, required=True)
+    token = serializers.CharField(min_length=1, write_only=True, required=True)
+    uidb64 = serializers.CharField(min_length=1, write_only=True, required=True)
 
     class Meta:
-        fields = ['password', 'token', 'uidb64']
+        fields = ['password', 'confirm_password', 'token', 'uidb64']
 
     def validate(self, attrs):
+
+        if attrs.get('password') != attrs.get('confirm_password'):
+            raise serializers.ValidationError("Those passwords don't match.")
+        
         try:
             password = attrs.get('password')
             token = attrs.get('token')

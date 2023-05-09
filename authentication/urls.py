@@ -8,7 +8,11 @@ register = views.RegisterView.as_view({
 })
 
 verify = views.VerifyEmailView.as_view({
-    'get': 'retrieve',
+    'post': 'create',
+})
+
+request_verify_otp = views.RequestAnotherVerificationOTPView.as_view({
+    'post': 'create',
 })
 
 login = views.LoginView.as_view({
@@ -23,15 +27,19 @@ logout = views.LogoutView.as_view({
     'post': 'create',
 })
 
+password_reset_otp = views.CheckResetPasswordOTPView.as_view({
+    'post': 'create',
+})
 
 
 urlpatterns = [
     path('register/', register, name="register"),
-    path('email_verify/', verify, name="email_verify"),
+    path('email-verify/', verify, name="email-verify"),
+    path('request-verify-otp/', request_verify_otp, name="request-verify-otp"),
     path('login/', login, name="login"),
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
-    path('request-reset-email/', password_reset, name="request-reset-email"),
-    path('password-reset/<uidb64>/<token>/', views.PasswordTokenCheckView.as_view(), name="password-reset-confirm"),
+    path('request-password-reset/', password_reset, name="request-password-reset"),
+    path('password-reset-otp/', password_reset_otp, name="password-reset-otp"),
     path('password-reset-complete/', views.SetNewPasswordView.as_view(), name="password-reset-complete"),
     path('logout/', logout, name="logout"),
 ]
