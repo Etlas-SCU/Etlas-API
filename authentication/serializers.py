@@ -116,13 +116,18 @@ class RequestPasswordResetEmailSerializer(serializers.Serializer):
 
 class SetNewPasswordSerializer(serializers.Serializer):
     password = serializers.CharField(min_length=8, max_length=255, write_only=True, required=True)
+    confirm_password = serializers.CharField(min_length=8, max_length=255, write_only=True, required=True)
     token = serializers.CharField(min_length=1, write_only=True, required=True)
     uidb64 = serializers.CharField(min_length=1, write_only=True, required=True)
 
     class Meta:
-        fields = ['password', 'token', 'uidb64']
+        fields = ['password', 'confirm_password', 'token', 'uidb64']
 
     def validate(self, attrs):
+
+        if attrs.get('password') != attrs.get('confirm_password'):
+            raise serializers.ValidationError("Those passwords don't match.")
+        
         try:
             password = attrs.get('password')
             token = attrs.get('token')
