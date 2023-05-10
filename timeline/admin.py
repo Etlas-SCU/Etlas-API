@@ -22,20 +22,20 @@ class EraAdmin(admin.ModelAdmin):
     search_fields = ['era_name']
 
     def get_end_date(self, obj):
-        if obj.end_date == math.inf:
+        if obj.era_end == math.inf:
             return "After Time"
-        if obj.end_date < 0:
-            return f"{abs(obj.end_date)} BC"
+        if obj.era_end < 0:
+            return f"{abs(obj.era_end)} BC"
         else:
-            return f"{obj.end_date} AD"
+            return f"{obj.era_end} AD"
 
     def get_start_date(self, obj):
-        if obj.start_date == -math.inf:
+        if obj.era_start == -math.inf:
             return "Before Time"
-        if obj.start_date < 0:
-            return f"{abs(obj.start_date)} BC"
+        if obj.era_start < 0:
+            return f"{abs(obj.era_start)} BC"
         else:
-            return f"{obj.start_date} AD"
+            return f"{obj.era_start} AD"
 
     get_start_date.short_description = 'Start Date'
     get_end_date.short_description = 'End Date'
@@ -53,20 +53,20 @@ class HistoryTimelineAdmin(admin.ModelAdmin):
     search_fields = ['timeline_name']
 
     def get_end_date(self, obj):
-        if obj.end_date == math.inf:
+        if obj.timeline_end == math.inf:
             return "After Time"
-        if obj.end_date < 0:
-            return f"{abs(obj.end_date)} BC"
+        if obj.timeline_end < 0:
+            return f"{abs(obj.timeline_end)} BC"
         else:
-            return f"{obj.end_date} AD"
+            return f"{obj.timeline_end} AD"
 
     def get_start_date(self, obj):
-        if obj.start_date == -math.inf:
+        if obj.timeline_start == -math.inf:
             return "Before Time"
-        if obj.start_date < 0:
-            return f"{abs(obj.start_date)} BC"
+        if obj.timeline_start < 0:
+            return f"{abs(obj.timeline_start)} BC"
         else:
-            return f"{obj.start_date} AD"
+            return f"{obj.timeline_start} AD"
 
     get_start_date.short_description = 'Start Date'
     get_end_date.short_description = 'End Date'
