@@ -84,7 +84,7 @@ def delete_image(sender, instance, **kwargs):
 
 class OTP(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    otp = models.CharField(max_length=6)
+    otp = models.CharField(max_length=4)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

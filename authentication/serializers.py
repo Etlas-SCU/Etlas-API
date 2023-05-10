@@ -39,7 +39,7 @@ class RegisterSerializer(serializers.ModelSerializer):
         
 
 class EmailVerficationSerializer(serializers.Serializer):
-    otp = serializers.CharField(max_length=6, min_length=6, write_only=True, required=True)
+    otp = serializers.CharField(max_length=4, min_length=4, write_only=True, required=True)
 
     class Meta:
         fields = ['otp']

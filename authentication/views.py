@@ -24,7 +24,7 @@ class RegisterView(viewsets.ModelViewSet):
         user_data = serializer.data
 
         user = User.objects.get(email=user_data['email'])
-        otp = OTP.objects.create(user=user, otp=random.randint(100000, 999999))
+        otp = OTP.objects.create(user=user, otp=random.randint(1000, 9999))
         otp.save() 
 
         email_body = 'Hi '+ user.full_name + \
@@ -82,7 +82,7 @@ class RequestAnotherVerificationOTPView(viewsets.ModelViewSet):
             if hasattr(user, 'otp'):
                 user.otp.delete()
                 user.save()
-            otp = OTP.objects.create(user=user, otp=random.randint(100000, 999999))
+            otp = OTP.objects.create(user=user, otp=random.randint(1000, 9999))
             otp.save()
 
             email_body = 'Hi '+ user.full_name + \
@@ -131,7 +131,7 @@ class RequestPasswordResetEmailView(viewsets.ModelViewSet):
                 user.otp.delete()
                 user.save()
 
-            opt = OTP.objects.create(user=user, otp=random.randint(100000, 999999))
+            opt = OTP.objects.create(user=user, otp=random.randint(1000, 9999))
             opt.save()
 
             email_body = 'Hello, \nUse OTP below to reset your password\n' + str(opt.otp)
