@@ -2,17 +2,52 @@ from rest_framework import viewsets
 
 from .models import Question
 from .serializers import QuestionSerializer
+import random
+from rest_framework.response import Response
+
 
 # Create your views here.
 
 class QuestionStatuesViewSet(viewsets.ModelViewSet):
-    queryset = Question.objects.filter(label='statue')
     serializer_class = QuestionSerializer
+
+    def get_queryset(self):
+        return Question.objects.filter(label='statue')
+    
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(queryset, many=True)
+        shuffled = list(serializer.data)
+        random.shuffle(shuffled)
+        
+        return Response(shuffled)
+
 
 class QuestionMonumentsViewSet(viewsets.ModelViewSet):
-    queryset = Question.objects.filter(label='monument')
     serializer_class = QuestionSerializer
 
+    def get_queryset(self):
+        return Question.objects.filter(label='monument')
+    
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(queryset, many=True)
+        shuffled = list(serializer.data)
+        random.shuffle(shuffled)
+        
+        return Response(shuffled)
+
+
 class QuestionLandmarksViewSet(viewsets.ModelViewSet):
-    queryset = Question.objects.filter(label='landmark')
     serializer_class = QuestionSerializer
+
+    def get_queryset(self):
+        return Question.objects.filter(label='landmark')
+    
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(queryset, many=True)
+        shuffled = list(serializer.data)
+        random.shuffle(shuffled)
+        
+        return Response(shuffled)
