@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from rest_framework import generics
-from .models import HistoryTimeline, Era
+from .models import HistoryTimeline
 from .serializers import HistoryTimelineSerializer
 from .paginators import CustomLimitOffsetPagination
 
