@@ -9,8 +9,13 @@ class EraSerializer(serializers.ModelSerializer):
 
 
 class HistoryTimelineSerializer(serializers.ModelSerializer):
-    eras = EraSerializer(many=True, read_only=True)
+    eras = serializers.SerializerMethodField()
 
     class Meta:
         model = HistoryTimeline
         fields = ['id', 'timeline_name', 'timeline_start', 'timeline_end', 'timeline_description', 'eras']
+
+    def get_eras(self, obj):
+        eras = Era.objects.filter(history_timeline=obj)
+        serializer = EraSerializer(eras, many=True)
+        return serializer.data
