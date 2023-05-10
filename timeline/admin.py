@@ -10,24 +10,6 @@ class EraInline(admin.TabularInline):
     extra = 3
 
 
-def get_start_date(obj):
-    if obj.start_date == -math.inf:
-        return "Before Time"
-    if obj.start_date < 0:
-        return f"{abs(obj.start_date)} BC"
-    else:
-        return f"{obj.start_date} AD"
-
-
-def get_end_date(obj):
-    if obj.end_date == math.inf:
-        return "After Time"
-    if obj.end_date < 0:
-        return f"{abs(obj.end_date)} BC"
-    else:
-        return f"{obj.end_date} AD"
-
-
 class EraAdmin(admin.ModelAdmin):
     fieldsets = [
         (None, {'fields': ['era_name']}),
@@ -38,6 +20,23 @@ class EraAdmin(admin.ModelAdmin):
     list_display = ['era_name', 'get_start_date', 'get_end_date']
     list_filter = ['era_start']
     search_fields = ['era_name']
+
+    def get_end_date(self, obj):
+        if obj.end_date == math.inf:
+            return "After Time"
+        if obj.end_date < 0:
+            return f"{abs(obj.end_date)} BC"
+        else:
+            return f"{obj.end_date} AD"
+
+    def get_start_date(self, obj):
+        if obj.start_date == -math.inf:
+            return "Before Time"
+        if obj.start_date < 0:
+            return f"{abs(obj.start_date)} BC"
+        else:
+            return f"{obj.start_date} AD"
+
     get_start_date.short_description = 'Start Date'
     get_end_date.short_description = 'End Date'
 
@@ -52,6 +51,23 @@ class HistoryTimelineAdmin(admin.ModelAdmin):
     list_display = ['timeline_name', 'get_start_date', 'get_end_date']
     list_filter = ['timeline_start']
     search_fields = ['timeline_name']
+
+    def get_end_date(self, obj):
+        if obj.end_date == math.inf:
+            return "After Time"
+        if obj.end_date < 0:
+            return f"{abs(obj.end_date)} BC"
+        else:
+            return f"{obj.end_date} AD"
+
+    def get_start_date(self, obj):
+        if obj.start_date == -math.inf:
+            return "Before Time"
+        if obj.start_date < 0:
+            return f"{abs(obj.start_date)} BC"
+        else:
+            return f"{obj.start_date} AD"
+
     get_start_date.short_description = 'Start Date'
     get_end_date.short_description = 'End Date'
 
