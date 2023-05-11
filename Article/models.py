@@ -12,8 +12,8 @@ from django.core.files.storage import default_storage
 class Articles(models.Model):
     article_title = models.CharField(max_length=200)
     date = models.DateField()
-    image = models.ImageField(upload_to="articles_images/")
-    description = models.TextField()
+    image = models.ImageField(upload_to="articles_images/",null=True)
+    description = models.TextField(null=True)
 
 
     def delete(self, *args, **kwargs):
@@ -23,9 +23,9 @@ class Articles(models.Model):
 
 
 class Section(models.Model):
-    article = models.ForeignKey(Articles,on_delete=models.CASCADE)
+    article = models.ManyToManyField(Articles,related_name='sections')
     section_title = models.CharField(max_length=200)
-    description = models.TextField()
+    description = models.TextField(null=True)
 
 
 

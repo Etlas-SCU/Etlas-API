@@ -6,17 +6,17 @@ from rest_framework import serializers
 class SectionSerializers(serializers.ModelSerializer):
     class Meta:
         model = Section
-        fields = '__all__'
+        fields = ['id','section_title','description']
 
 
 
 
 class ArticlesSerializers(serializers.ModelSerializer):
-    section = SectionSerializers(many=True,read_only=True)
+    sections = SectionSerializers(many=True,read_only=True)
     class Meta:
         model = Articles
-        fields = '__all__'
-        depth = 1
+        fields = ['id','article_title','date','image','description','sections']
+       
 
 
 

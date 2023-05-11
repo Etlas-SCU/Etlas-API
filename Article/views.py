@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from .models import Articles,Section
-from .serializers import ArticlesSerializers,SectionSerializers
+from .serializers import ArticlesSerializers
 from rest_framework import generics
 # Create your views here.
 
@@ -19,10 +19,6 @@ class GetSingleArticle(generics.RetrieveAPIView):
     queryset = Articles.objects.all()
     serializer_class = ArticlesSerializers
 
-    
-class Sectionlist(generics.ListAPIView):
-    queryset = Section.objects.all()
-    serializer_class = SectionSerializers
 
 
 
