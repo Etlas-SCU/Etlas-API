@@ -38,6 +38,9 @@ urlpatterns = [
     path('', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
     path("timeline/", include("timeline.urls")),
     path("tours/", include("tours.urls")),
-    path("api/", include("knowledge_check.urls")),
     path("articles/", include("articles.urls")),
+    path("questions/",include("knowledge_check.urls")),
+    path("users/",include("users.urls")),
+    path("auth/", include("authentication.urls")),
+    path("social-auth/", include("social_auth.urls")),
 ]

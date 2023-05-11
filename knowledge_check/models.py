@@ -1,7 +1,8 @@
-from django.db import models
-from django.db.models.signals import pre_delete, post_save
-from django.dispatch import receiver
 from django.core.files.storage import default_storage
+from django.db import models
+from django.db.models.signals import post_save, pre_delete
+from django.dispatch import receiver
+
 from .tasks import validate_question_task
 
 # Create your models here.
@@ -27,7 +28,7 @@ class Question(models.Model):
     statement = models.CharField(max_length=200)
     label = models.CharField(max_length=200, choices=LABEL_CHOICES)
     image = models.ImageField(upload_to='questions_images/')
-    correct_chocie = models.CharField(max_length=200)
+    correct_choice = models.CharField(max_length=200)
     choices = models.ManyToManyField(Choice, related_name='choices')
 
     def __str__(self):

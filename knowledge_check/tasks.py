@@ -10,7 +10,7 @@ def validate_question_task(self, question_id):
         question.delete()
         return 'The question is deleted because it has less than 4 choices.'
     
-    correct_choice = question.choices.filter(choice_text=question.correct_chocie)
+    correct_choice = question.choices.filter(choice_text=question.correct_choice)
 
     if not correct_choice:
         question.delete()
