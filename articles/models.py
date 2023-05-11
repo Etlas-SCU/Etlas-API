@@ -3,17 +3,16 @@ from django.db import models
 from django.db.models.signals import pre_delete, post_save
 from django.dispatch import receiver
 from django.core.files.storage import default_storage
-# Create your models here.
 
 
-
-
-
-class Articles(models.Model):
+class Article(models.Model):
     article_title = models.CharField(max_length=200)
     date = models.DateField()
     image = models.ImageField(upload_to="articles_images/")
+    description = models.TextField()
 
+    def __str__(self):
+        return self.article_title
 
     def delete(self, *args, **kwargs):
         # Delete the image file from Backblaze B2 bucket
@@ -22,20 +21,18 @@ class Articles(models.Model):
 
 
 class Section(models.Model):
-    article = models.ForeignKey(Articles,on_delete=models.CASCADE)
+    article = models.ForeignKey(Article, related_name='sections', on_delete=models.CASCADE)
     section_title = models.CharField(max_length=200)
     description = models.TextField()
 
+    def __str__(self):
+        return self.section_title
 
 
-
-@receiver(pre_delete, sender=Articles)
+@receiver(pre_delete, sender=Article)
 def delete_image(sender, instance, **kwargs):
     """
     Delete the image file from Backblaze B2 bucket when the instance of the model
     is deleted.
     """
     default_storage.delete(instance.image.name)
-
-
-    
