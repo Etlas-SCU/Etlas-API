@@ -1,5 +1,6 @@
 from rest_framework import serializers
-from .models import Tour,TourSection,Image
+from .models import Tour, TourSection, Image
+
 
 class ImageSerializers(serializers.ModelSerializer):
     class Meta:
@@ -13,12 +14,10 @@ class TourSectionSerializer(serializers.ModelSerializer):
         fields = ['id', 'title', 'description']
 
 
-
 class TourSerializer(serializers.ModelSerializer):
-    sections = TourSectionSerializer(many = True, read_only=True)
+    sections = TourSectionSerializer(many=True, read_only=True)
     images = ImageSerializers(many=True, read_only=True)
+
     class Meta:
         model = Tour
-        fields = ['id', 'title', 'description','sections','images']
-
-
+        fields = ['id', 'title', 'description', 'sections', 'images']
