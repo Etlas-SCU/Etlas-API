@@ -484,6 +484,7 @@ libcloud = ["apache-libcloud"]
 sftp = ["paramiko (>=1.10.0)"]
 
 [[package]]
+
 name = "djangorestframework"
 version = "3.14.0"
 description = "Web APIs for Django, made easy."
