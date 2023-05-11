@@ -8,7 +8,7 @@ from django.dispatch import receiver
 
 class HistoryTimeline(models.Model):
     """ HistoryTimeline model for timeline app """
-    timeline_name = models.CharField(max_length=200, default='New Timeline')
+    timeline_name = models.CharField(max_length=200)
     timeline_start = models.IntegerField(default=-math.inf)
     timeline_end = models.IntegerField(default=math.inf)
     timeline_description = models.TextField(default="")
@@ -19,11 +19,11 @@ class HistoryTimeline(models.Model):
 
 class Era(models.Model):
     """ Era model for timeline app """
-    era_name = models.CharField(max_length=200, default='New Era')
+    era_name = models.CharField(max_length=200)
     era_start = models.IntegerField(default=-math.inf)
     era_end = models.IntegerField(default=math.inf)
     era_description = models.TextField(default="")
-    history_timeline = models.ForeignKey(HistoryTimeline, on_delete=models.CASCADE)
+    history_timeline = models.ForeignKey(HistoryTimeline, on_delete=models.CASCADE, related_name='eras')
     image = models.ImageField(upload_to='era_images', blank=True, null=True)
 
     def __str__(self):
