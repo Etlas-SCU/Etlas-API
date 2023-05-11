@@ -1,8 +1,8 @@
+import environ
 from django.contrib.auth import authenticate
-from users.models import User
 from rest_framework.exceptions import AuthenticationFailed
-import environ 
 
+from users.models import User
 
 env = environ.Env()
 EXTERNAL_PASSWORD = env("EXTERNAL_PASSWORD")

@@ -1,14 +1,22 @@
-from rest_framework import viewsets, status, generics
-from users.models import User, OTP
-from .serializers import RegisterSerializer, EmailVerficationSerializer, LoginSerializer, RequestPasswordResetEmailSerializer, SetNewPasswordSerializer, LogoutSerializer, ResendEmailVerificationSerializer
-from rest_framework.response import Response
-from .tasks import send_email
+import datetime
+import random
+
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
+from django.utils import timezone
 from django.utils.encoding import smart_bytes
 from django.utils.http import urlsafe_base64_encode
+from rest_framework import generics, status, viewsets
 from rest_framework.permissions import IsAuthenticated
-import random, datetime
-from django.utils import timezone
+from rest_framework.response import Response
+
+from users.models import OTP, User
+
+from .serializers import (EmailVerficationSerializer, LoginSerializer,
+                          LogoutSerializer, RegisterSerializer,
+                          RequestPasswordResetEmailSerializer,
+                          ResendEmailVerificationSerializer,
+                          SetNewPasswordSerializer)
+from .tasks import send_email
 
 # Create your views here.
 
@@ -51,7 +59,7 @@ class VerifyEmailView(viewsets.ModelViewSet):
             if user.is_verified:
                 return Response({'error': 'User already verified'}, status=status.HTTP_400_BAD_REQUEST)
 
-            time = user.otp.created_at + datetime.timedelta(minutes=5)
+            time = user.otp.created_at + datetime.timedelta(minutes=1)
             current = timezone.now()
             if current > time:
                 return Response({'error': 'OTP expired, request another one'}, status=status.HTTP_400_BAD_REQUEST)
@@ -157,7 +165,7 @@ class CheckResetPasswordOTPView(viewsets.ModelViewSet):
             main_otp = OTP.objects.get(otp=otp)
             user = main_otp.user
             
-            time = user.otp.created_at + datetime.timedelta(minutes=5)
+            time = user.otp.created_at + datetime.timedelta(minutes=1)
             current = timezone.now()
             if current > time:
                 return Response({'error': 'OTP expired, request another one'}, status=status.HTTP_400_BAD_REQUEST)

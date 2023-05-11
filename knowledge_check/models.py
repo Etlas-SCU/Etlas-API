@@ -1,7 +1,8 @@
-from django.db import models
-from django.db.models.signals import pre_delete, post_save
-from django.dispatch import receiver
 from django.core.files.storage import default_storage
+from django.db import models
+from django.db.models.signals import post_save, pre_delete
+from django.dispatch import receiver
+
 from .tasks import validate_question_task
 
 # Create your models here.

@@ -1,8 +1,9 @@
+import environ
 from rest_framework import serializers
-from . import google, facebook, twitterhelper
-from .register import register_social_user
 from rest_framework.exceptions import AuthenticationFailed
-import environ 
+
+from . import facebook, google, twitterhelper
+from .register import register_social_user
 
 env = environ.Env()
 GOOGLE_ID = env("GOOGLE_ID")

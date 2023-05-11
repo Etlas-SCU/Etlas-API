@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib import admin
 
-from .models import User, OTP
+from .models import OTP, User
 
 # Register your models here.
 

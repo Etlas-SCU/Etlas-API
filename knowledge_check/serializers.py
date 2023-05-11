@@ -1,5 +1,8 @@
+import random
+
+import environ
 from rest_framework import serializers
-import environ, random
+
 from .models import Question
 
 env = environ.Env()

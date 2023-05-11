@@ -1,6 +1,7 @@
 from django.urls import path
 
-from .views import QuestionStatuesViewSet, QuestionMonumentsViewSet, QuestionLandmarksViewSet
+from .views import (QuestionLandmarksViewSet, QuestionMonumentsViewSet,
+                    QuestionStatuesViewSet)
 
 questions_statues = QuestionStatuesViewSet.as_view({
     'get': 'list',

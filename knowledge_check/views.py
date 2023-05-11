@@ -1,10 +1,10 @@
+import random
+
 from rest_framework import viewsets
+from rest_framework.response import Response
 
 from .models import Question
 from .serializers import QuestionSerializer
-import random
-from rest_framework.response import Response
-
 
 # Create your views here.
 

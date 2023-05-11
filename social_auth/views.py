@@ -1,7 +1,10 @@
-from rest_framework import viewsets, status
+from rest_framework import status, viewsets
 from rest_framework.response import Response
-from .serializers import GoogleSocialAuthSerializer, FacebookSocialAuthSerializer, TwitterAuthSerializer
+
 from users.models import User
+
+from .serializers import (FacebookSocialAuthSerializer,
+                          GoogleSocialAuthSerializer, TwitterAuthSerializer)
 
 # Create your views here.
 

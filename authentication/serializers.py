@@ -1,15 +1,26 @@
-from rest_framework import serializers
-from users.models import User
+import environ
 from django.contrib import auth
-from rest_framework.exceptions import AuthenticationFailed
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.utils.encoding import force_str
 from django.utils.http import urlsafe_base64_decode
+from rest_framework import serializers
+from rest_framework.exceptions import AuthenticationFailed
 from rest_framework_simplejwt.tokens import RefreshToken, TokenError
+
+from users.models import User
+
+env = environ.Env()
 
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(max_length=255, min_length=8, write_only=True, required=True)
     confirm_password = serializers.CharField(max_length=255, min_length=8, write_only=True, required=True)
+    image_url = serializers.SerializerMethodField()
+
+    def get_image_url(self, obj):
+        if obj.image:
+            return f'https://{env("AWS_STORAGE_BUCKET_NAME")}.s3.{env("AWS_S3_REGION_NAME")}.backblazeb2.com/media/{obj.image}'
+        else:
+            return None
 
     def validate(self, data):
         
@@ -32,7 +43,7 @@ class RegisterSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = User
-        fields = ['id', 'email', 'full_name', 'password', 'confirm_password', 'address', 'phone_number', 'image', 'best_score']
+        fields = ['id', 'email', 'full_name', 'password', 'confirm_password', 'address', 'phone_number', 'image_url', 'best_score']
         extra_kwargs = {
             'best_score': {'read_only': True},
         }
@@ -53,7 +64,14 @@ class ResendEmailVerificationSerializer(serializers.Serializer):
 class LoginSerializer(serializers.ModelSerializer):
     email = serializers.CharField(max_length=255, required=True)
     password = serializers.CharField(max_length=255, write_only=True, required=True)
+    image_url = serializers.SerializerMethodField()
     tokens = serializers.SerializerMethodField()
+
+    def get_image_url(self, obj):
+        if obj.image:
+            return f'https://{env("AWS_STORAGE_BUCKET_NAME")}.s3.{env("AWS_S3_REGION_NAME")}.backblazeb2.com/media/{obj.image}'
+        else:
+            return None
 
     def get_tokens(self, obj):
 
@@ -66,12 +84,12 @@ class LoginSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = User
-        fields = ['id', 'email', 'password', 'full_name', 'address', 'phone_number', 'image', 'best_score', 'tokens']
+        fields = ['id', 'email', 'password', 'full_name', 'address', 'phone_number', 'image_url', 'best_score', 'tokens']
         extra_kwargs = {
             'best_score': {'read_only': True},
             'address': {'read_only': True},
             'phone_number': {'read_only': True},
-            'image': {'read_only': True},
+            'image_url': {'read_only': True},
             'full_name': {'read_only': True},
         }
 

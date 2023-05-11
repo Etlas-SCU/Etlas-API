@@ -1,6 +1,6 @@
+import environ
 import twitter
 from rest_framework import serializers
-import environ 
 
 env = environ.Env()
 

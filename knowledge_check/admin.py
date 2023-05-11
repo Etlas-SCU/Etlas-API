@@ -1,5 +1,7 @@
 from django.contrib import admin
+
 from .models import Choice, Question
+
 
 class QuestionAdmin(admin.ModelAdmin):
     list_display = ('statement', 'label', 'correct_choice')

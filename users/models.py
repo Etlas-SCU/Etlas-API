@@ -1,9 +1,9 @@
-from django.db import models
-from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
+from django.contrib.auth.models import (AbstractBaseUser, BaseUserManager,
+                                        PermissionsMixin)
 from django.core.files.storage import default_storage
+from django.db import models
 from django.db.models.signals import pre_delete
 from django.dispatch import receiver
-import uuid
 from rest_framework_simplejwt.tokens import RefreshToken
 
 # Create your models here.
