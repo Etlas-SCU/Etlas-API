@@ -27,7 +27,7 @@ class Question(models.Model):
     statement = models.CharField(max_length=200)
     label = models.CharField(max_length=200, choices=LABEL_CHOICES)
     image = models.ImageField(upload_to='questions_images/')
-    correct_chocie = models.CharField(max_length=200)
+    correct_choice = models.CharField(max_length=200)
     choices = models.ManyToManyField(Choice, related_name='choices')
 
     def __str__(self):
