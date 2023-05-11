@@ -21,3 +21,5 @@ ruamel.yaml.clib==0.2.7
 sqlparse==0.4.3
 uritemplate==4.1.1
 urllib3==1.26.15
+
+celery~=5.2.7
