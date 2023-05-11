@@ -2,15 +2,19 @@ import math
 
 from rest_framework import serializers
 from .models import HistoryTimeline, Era
+import environ
+
+env = environ.Env()
 
 
 class EraSerializer(serializers.ModelSerializer):
     era_start_date = serializers.SerializerMethodField()
     era_end_date = serializers.SerializerMethodField()
+    image_url = serializers.SerializerMethodField()
 
     class Meta:
         model = Era
-        fields = ['id', 'era_name', 'era_start_date', 'era_end_date', 'era_description', 'image']
+        fields = ['id', 'era_name', 'era_start_date', 'era_end_date', 'era_description', 'image_url']
 
     def get_era_start_date(self, obj):
         if obj.era_start == -math.inf:
@@ -27,6 +31,11 @@ class EraSerializer(serializers.ModelSerializer):
             return f"{abs(obj.era_end)} BC"
         else:
             return f"{obj.era_end} AD"
+
+    def get_image_url(self, obj):
+        if obj.image:
+            return f'https://{env("AWS_STORAGE_BUCKET_NAME")}.s3.{env("AWS_S3_REGION_NAME")}.backblazeb2.com/media/{obj.image}'
+        return None
 
 
 class HistoryTimelineSerializer(serializers.ModelSerializer):
