@@ -44,9 +44,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'Article',
     'drf_yasg',
-    "tours"
+    "tours",
+    "django_extensions",
 ]
 
 MIDDLEWARE = [

@@ -4,7 +4,7 @@ from .models import Tour,TourSection,Image
 class ImageSerializers(serializers.ModelSerializer):
     class Meta:
         model = Image
-        fields = ['id','image']
+        fields = ['id', 'image']
 
 
 class TourSectionSerializer(serializers.ModelSerializer):
@@ -15,7 +15,7 @@ class TourSectionSerializer(serializers.ModelSerializer):
 
 
 class TourSerializer(serializers.ModelSerializer):
-    sections = TourSectionSerializer(many = True)
+    sections = TourSectionSerializer(many = True, read_only=True)
     images = ImageSerializers(many=True, read_only=True)
     class Meta:
         model = Tour
