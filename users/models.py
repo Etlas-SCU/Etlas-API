@@ -6,28 +6,30 @@ from django.db.models.signals import pre_delete
 from django.dispatch import receiver
 from rest_framework_simplejwt.tokens import RefreshToken
 
+
 # Create your models here.
 
 
 class UserManager(BaseUserManager):
-    
+
     def create_user(self, email, full_name, address=None, phone_number=None, image=None, password=None):
         if full_name is None:
             raise TypeError('Users must have a full name')
-        
+
         if email is None:
             raise TypeError('Users must have an email address')
-            
-        user = self.model(email=self.normalize_email(email), full_name=full_name, address = address, phone_number = phone_number, image=image)
+
+        user = self.model(email=self.normalize_email(email), full_name=full_name, address=address,
+                          phone_number=phone_number, image=image)
         user.set_password(password)
         user.save()
         return user
-    
+
     def create_superuser(self, email, full_name, password=None):
         if password is None:
             raise TypeError('Password should not be none')
-        
-        user = self.create_user(email = email, full_name = full_name, password = password)
+
+        user = self.create_user(email=email, full_name=full_name, password=password)
         user.is_superuser = True
         user.is_staff = True
         user.is_verified = True
@@ -59,14 +61,14 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return self.email
-    
+
     def tokens(self):
         refresh = RefreshToken.for_user(self)
         return {
             'refresh': str(refresh),
             'access': str(refresh.access_token),
         }
-    
+
     def delete(self, *args, **kwargs):
         # Delete the image file from Backblaze B2 bucket
         default_storage.delete(self.image.name)
@@ -89,4 +91,3 @@ class OTP(models.Model):
 
     def __str__(self):
         return self.otp
-    

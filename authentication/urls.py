@@ -31,7 +31,6 @@ password_reset_otp = views.CheckResetPasswordOTPView.as_view({
     'post': 'create',
 })
 
-
 urlpatterns = [
     path('register/', register, name="register"),
     path('email-verify/', verify, name="email-verify"),

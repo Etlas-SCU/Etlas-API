@@ -1,8 +1,9 @@
 import math
 
-from rest_framework import serializers
-from .models import HistoryTimeline, Era
 import environ
+from rest_framework import serializers
+
+from .models import HistoryTimeline, Era
 
 env = environ.Env()
 

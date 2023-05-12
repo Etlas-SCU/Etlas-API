@@ -1,6 +1,7 @@
-from .models import Article, Section
-from rest_framework import serializers
 import environ
+from rest_framework import serializers
+
+from .models import Article, Section
 
 env = environ.Env()
 

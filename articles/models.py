@@ -1,7 +1,7 @@
+from django.core.files.storage import default_storage
 from django.db import models
 from django.db.models.signals import pre_delete
 from django.dispatch import receiver
-from django.core.files.storage import default_storage
 
 
 class Article(models.Model):

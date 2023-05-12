@@ -7,18 +7,19 @@ from users.models import User
 env = environ.Env()
 EXTERNAL_PASSWORD = env("EXTERNAL_PASSWORD")
 
+
 def register_social_user(provider, user_id, email, name):
     filtered_user_by_email = User.objects.filter(email=email)
 
     if filtered_user_by_email.exists():
 
         if provider == filtered_user_by_email[0].auth_provider:
-            
+
             registered_user = authenticate(
                 email=email, password=EXTERNAL_PASSWORD)
 
             return {
-                'full_name' : registered_user.full_name,
+                'full_name': registered_user.full_name,
                 'email': registered_user.email,
                 'tokens': registered_user.tokens()}
 

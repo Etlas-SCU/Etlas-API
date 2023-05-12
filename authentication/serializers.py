@@ -11,6 +11,7 @@ from users.models import User
 
 env = environ.Env()
 
+
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(max_length=255, min_length=8, write_only=True, required=True)
     confirm_password = serializers.CharField(max_length=255, min_length=8, write_only=True, required=True)
@@ -23,12 +24,12 @@ class RegisterSerializer(serializers.ModelSerializer):
             return None
 
     def validate(self, data):
-        
+
         if data.get('password') != data.get('confirm_password'):
             raise serializers.ValidationError("Those passwords don't match.")
-        
+
         return data
-    
+
     def create(self, validated_data):
         full_name = validated_data.get('full_name')
         email = validated_data.get('email')
@@ -37,17 +38,19 @@ class RegisterSerializer(serializers.ModelSerializer):
         phone_number = validated_data.get('phone_number')
         image = validated_data.get('image')
 
-        user = User.objects.create_user(email=email, full_name=full_name, address=address, phone_number=phone_number, image=image, password=password)
+        user = User.objects.create_user(email=email, full_name=full_name, address=address, phone_number=phone_number,
+                                        image=image, password=password)
 
         return user
-    
+
     class Meta:
         model = User
-        fields = ['id', 'email', 'full_name', 'password', 'confirm_password', 'address', 'phone_number', 'image_url', 'best_score']
+        fields = ['id', 'email', 'full_name', 'password', 'confirm_password', 'address', 'phone_number', 'image_url',
+                  'best_score']
         extra_kwargs = {
             'best_score': {'read_only': True},
         }
-        
+
 
 class EmailVerficationSerializer(serializers.Serializer):
     otp = serializers.CharField(max_length=4, min_length=4, write_only=True, required=True)
@@ -55,11 +58,13 @@ class EmailVerficationSerializer(serializers.Serializer):
     class Meta:
         fields = ['otp']
 
+
 class ResendEmailVerificationSerializer(serializers.Serializer):
     email = serializers.EmailField(min_length=2, required=True)
 
     class Meta:
         fields = ['email']
+
 
 class LoginSerializer(serializers.ModelSerializer):
     email = serializers.CharField(max_length=255, required=True)
@@ -75,16 +80,17 @@ class LoginSerializer(serializers.ModelSerializer):
 
     def get_tokens(self, obj):
 
-        user = User.objects.get(email = obj['email'])
+        user = User.objects.get(email=obj['email'])
 
-        return{
-            'access' : user.tokens()['access'],
-            'refresh' : user.tokens()['refresh'],
+        return {
+            'access': user.tokens()['access'],
+            'refresh': user.tokens()['refresh'],
         }
-    
+
     class Meta:
         model = User
-        fields = ['id', 'email', 'password', 'full_name', 'address', 'phone_number', 'image_url', 'best_score', 'tokens']
+        fields = ['id', 'email', 'password', 'full_name', 'address', 'phone_number', 'image_url', 'best_score',
+                  'tokens']
         extra_kwargs = {
             'best_score': {'read_only': True},
             'address': {'read_only': True},
@@ -92,7 +98,6 @@ class LoginSerializer(serializers.ModelSerializer):
             'image_url': {'read_only': True},
             'full_name': {'read_only': True},
         }
-
 
     def validate(self, attrs):
         email = attrs.get('email', '')
@@ -104,16 +109,15 @@ class LoginSerializer(serializers.ModelSerializer):
             raise AuthenticationFailed(
                 detail='Please continue your login using ' + filtered_user_by_email[0].auth_provider)
 
-
         if not user:
             raise AuthenticationFailed('Invalid credentials, try again')
-        
+
         if not user.is_active:
             raise AuthenticationFailed('Account disabled, contact admin')
-        
+
         if not user.is_verified:
             raise AuthenticationFailed('Email is not verified')
-        
+
         return {
             'id': user.id,
             'full_name': user.full_name,
@@ -132,6 +136,7 @@ class RequestPasswordResetEmailSerializer(serializers.Serializer):
     class Meta:
         fields = ['email']
 
+
 class SetNewPasswordSerializer(serializers.Serializer):
     password = serializers.CharField(min_length=8, max_length=255, write_only=True, required=True)
     confirm_password = serializers.CharField(min_length=8, max_length=255, write_only=True, required=True)
@@ -145,7 +150,7 @@ class SetNewPasswordSerializer(serializers.Serializer):
 
         if attrs.get('password') != attrs.get('confirm_password'):
             raise serializers.ValidationError("Those passwords don't match.")
-        
+
         try:
             password = attrs.get('password')
             token = attrs.get('token')
@@ -170,14 +175,14 @@ class LogoutSerializer(serializers.Serializer):
     default_error_messages = {
         'bad_token': ('Token is expired or invalid')
     }
-    
+
     def validate(self, data):
         self.token = data['refresh']
 
         return data
-    
+
     def save(self, **kwargs):
-        try: 
+        try:
             RefreshToken(self.token).blacklist()
         except TokenError:
             self.fail('bad_token')

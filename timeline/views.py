@@ -1,7 +1,8 @@
 from rest_framework import generics
+
 from .models import HistoryTimeline
-from .serializers import HistoryTimelineSerializer
 from .paginators import CustomLimitOffsetPagination
+from .serializers import HistoryTimelineSerializer
 
 
 class HistoryTimelineList(generics.ListAPIView):

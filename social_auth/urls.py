@@ -1,18 +1,17 @@
 from django.urls import path
 
-
 from . import views
 
 google = views.GoogleSocialAuthView.as_view({
-    'post' : 'create',
+    'post': 'create',
 })
 
 facebook = views.FacebookSocialAuthView.as_view({
-    'post' : 'create',
+    'post': 'create',
 })
 
 twitter = views.TwitterSocialAuthView.as_view({
-    'post' : 'create',
+    'post': 'create',
 })
 
 urlpatterns = [

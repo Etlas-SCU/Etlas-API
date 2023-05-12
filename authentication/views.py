@@ -10,13 +10,13 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from users.models import OTP, User
-
 from .serializers import (EmailVerficationSerializer, LoginSerializer,
                           LogoutSerializer, RegisterSerializer,
                           RequestPasswordResetEmailSerializer,
                           ResendEmailVerificationSerializer,
                           SetNewPasswordSerializer)
 from .tasks import send_email
+
 
 # Create your views here.
 
@@ -33,16 +33,17 @@ class RegisterView(viewsets.ModelViewSet):
 
         user = User.objects.get(email=user_data['email'])
         otp = OTP.objects.create(user=user, otp=random.randint(1000, 9999))
-        otp.save() 
+        otp.save()
 
-        email_body = 'Hi '+ user.full_name + \
-            ' Use the OTP below to verify your email \n' + str(otp.otp)
+        email_body = 'Hi ' + user.full_name + \
+                     ' Use the OTP below to verify your email \n' + str(otp.otp)
         data = {'email_body': email_body, 'to_email': user.email,
                 'email_subject': 'Verify your email'}
 
         send_email.delay(data)
 
         return Response(user_data, status=status.HTTP_201_CREATED)
+
 
 class VerifyEmailView(viewsets.ModelViewSet):
     queryset = User.objects.all()
@@ -72,7 +73,7 @@ class VerifyEmailView(viewsets.ModelViewSet):
 
         except (ValueError, User.DoesNotExist, OTP.DoesNotExist):
             return Response({'error': 'Invalid OTP'}, status=status.HTTP_400_BAD_REQUEST)
-        
+
 
 class RequestAnotherVerificationOTPView(viewsets.ModelViewSet):
     queryset = User.objects.all()
@@ -93,11 +94,11 @@ class RequestAnotherVerificationOTPView(viewsets.ModelViewSet):
             otp = OTP.objects.create(user=user, otp=random.randint(1000, 9999))
             otp.save()
 
-            email_body = 'Hi '+ user.full_name + \
-                ' Use the OTP below to verify your email \n' + str(otp.otp)
+            email_body = 'Hi ' + user.full_name + \
+                         ' Use the OTP below to verify your email \n' + str(otp.otp)
             data = {'email_body': email_body, 'to_email': user.email,
                     'email_subject': 'Verify your email'}
-            
+
             send_email.delay(data)
 
             return Response({'success': 'OTP sent successfully'}, status=status.HTTP_200_OK)
@@ -130,8 +131,9 @@ class RequestPasswordResetEmailView(viewsets.ModelViewSet):
         if User.objects.filter(email=email).exists():
             user = User.objects.get(email=email)
             if user.auth_provider != 'email':
-                return Response({'error': 'Please continue your login using ' + user.auth_provider}, status=status.HTTP_400_BAD_REQUEST)
-            
+                return Response({'error': 'Please continue your login using ' + user.auth_provider},
+                                status=status.HTTP_400_BAD_REQUEST)
+
             if not user.is_verified:
                 return Response({'error': 'Please verify your email first'}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -150,7 +152,7 @@ class RequestPasswordResetEmailView(viewsets.ModelViewSet):
             return Response({'success': 'We have sent you an OTP to reset your password'}, status=status.HTTP_200_OK)
         else:
             return Response({'error': 'This email does not exist'}, status=status.HTTP_400_BAD_REQUEST)
-        
+
 
 class CheckResetPasswordOTPView(viewsets.ModelViewSet):
     queryset = User.objects.all()
@@ -164,19 +166,20 @@ class CheckResetPasswordOTPView(viewsets.ModelViewSet):
         try:
             main_otp = OTP.objects.get(otp=otp)
             user = main_otp.user
-            
+
             time = user.otp.created_at + datetime.timedelta(minutes=1)
             current = timezone.now()
             if current > time:
                 return Response({'error': 'OTP expired, request another one'}, status=status.HTTP_400_BAD_REQUEST)
-            
+
             user.otp.delete()
             user.save()
 
             uidb64 = urlsafe_base64_encode(smart_bytes(user.id))
             token = PasswordResetTokenGenerator().make_token(user)
 
-            return Response({'success': 'OTP verified successfully', 'uidb64': uidb64, 'token': token}, status=status.HTTP_200_OK)
+            return Response({'success': 'OTP verified successfully', 'uidb64': uidb64, 'token': token},
+                            status=status.HTTP_200_OK)
 
         except (ValueError, User.DoesNotExist, OTP.DoesNotExist):
             return Response({'error': 'Invalid OTP'}, status=status.HTTP_400_BAD_REQUEST)
@@ -189,7 +192,8 @@ class SetNewPasswordView(generics.GenericAPIView):
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
         return Response({'success': True, 'message': 'Password reset success'}, status=status.HTTP_200_OK)
-    
+
+
 class LogoutView(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = LogoutSerializer
