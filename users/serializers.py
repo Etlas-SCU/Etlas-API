@@ -5,6 +5,7 @@ from .models import User
 
 env = environ.Env()
 
+
 class UserSerializer(serializers.ModelSerializer):
     image_url = serializers.SerializerMethodField()
 

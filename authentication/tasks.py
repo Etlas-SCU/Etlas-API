@@ -6,11 +6,11 @@ from django.core.mail import send_mail
 @shared_task(bind=True)
 def send_email(self, data):
     send_mail(
-        subject = data['email_subject'],
-        message= data['email_body'],
-        from_email= settings.DEFAULT_FROM_EMAIL,
+        subject=data['email_subject'],
+        message=data['email_body'],
+        from_email=settings.DEFAULT_FROM_EMAIL,
         recipient_list=[data['to_email'], ],
-        fail_silently= False,
+        fail_silently=False,
     )
 
     return "Sent!"

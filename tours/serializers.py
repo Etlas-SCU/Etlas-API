@@ -1,7 +1,7 @@
-from rest_framework import serializers
-from .models import Tour, TourSection, Image
-
 import environ
+from rest_framework import serializers
+
+from .models import Tour, TourSection, Image
 
 env = environ.Env()
 

@@ -8,6 +8,7 @@ from .register import register_social_user
 env = environ.Env()
 GOOGLE_ID = env("GOOGLE_ID")
 
+
 class GoogleSocialAuthSerializer(serializers.Serializer):
     auth_token = serializers.CharField()
 
@@ -21,7 +22,6 @@ class GoogleSocialAuthSerializer(serializers.Serializer):
             )
 
         if user_data['aud'] != GOOGLE_ID:
-
             raise AuthenticationFailed('oops, who are you?')
 
         user_id = user_data['sub']
@@ -31,6 +31,7 @@ class GoogleSocialAuthSerializer(serializers.Serializer):
 
         return register_social_user(
             provider=provider, user_id=user_id, email=email, name=name)
+
 
 class FacebookSocialAuthSerializer(serializers.Serializer):
     """Handles serialization of facebook related data"""
@@ -55,6 +56,7 @@ class FacebookSocialAuthSerializer(serializers.Serializer):
             raise serializers.ValidationError(
                 'The token is invalid or expired. Please login again.'
             )
+
 
 class TwitterAuthSerializer(serializers.Serializer):
     """Handles serialization of twitter related data"""

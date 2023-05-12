@@ -5,6 +5,7 @@ from .models import User
 from .permissions import IsTheCurrentUser
 from .serializers import UserSerializer
 
+
 # Create your views here.
 
 
