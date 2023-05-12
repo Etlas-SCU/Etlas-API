@@ -15,7 +15,6 @@ questions_landmarks = QuestionLandmarksViewSet.as_view({
     'get': 'list',
 })
 
-
 urlpatterns = [
     path('statues/', questions_statues, name='questions_statues'),
     path('monuments/', questions_monuments, name='questions_monuments'),

@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = [
@@ -23,7 +22,9 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('statement', models.CharField(max_length=200)),
-                ('label', models.CharField(choices=[('statue', 'statue'), ('monument', 'monument'), ('landmark', 'landmark')], max_length=200)),
+                ('label',
+                 models.CharField(choices=[('statue', 'statue'), ('monument', 'monument'), ('landmark', 'landmark')],
+                                  max_length=200)),
                 ('image', models.ImageField(upload_to='questions_images/')),
                 ('correct_choice', models.CharField(max_length=200)),
                 ('choices', models.ManyToManyField(related_name='choices', to='knowledge_check.choice')),

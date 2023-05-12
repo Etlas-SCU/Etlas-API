@@ -5,11 +5,10 @@ from django.dispatch import receiver
 
 from .tasks import validate_question_task
 
-# Create your models here.
 
 class Choice(models.Model):
-    """ Chocie model for the multiple choice questions """
-    
+    """ Choice model for the multiple choice questions """
+
     choice_text = models.CharField(max_length=200, unique=True)
 
     def __str__(self):
@@ -22,6 +21,7 @@ LABEL_CHOICES = (
     ('landmark', 'landmark'),
 )
 
+
 class Question(models.Model):
     """ Question model for the multiple choice questions """
 
@@ -33,12 +33,13 @@ class Question(models.Model):
 
     def __str__(self):
         return self.statement
-    
+
     def delete(self, *args, **kwargs):
         # Delete the image file from Backblaze B2 bucket
         default_storage.delete(self.image.name)
         super().delete(*args, **kwargs)
-    
+
+
 @receiver(post_save, sender=Question)
 def validate_question(sender, instance, created, **kwargs):
     """
