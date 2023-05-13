@@ -2,7 +2,7 @@
 
 This is the backend application for ***ETLAS***, an electronic tour guide. It contains an archive of the most popular tours, landmarks, monuments, statues, etc. of several places. It also contains a timeline of the history of several places. 
 It also contains a knowledge check section where the users can test their knowledge about the history of several places. And most importantly, it contains a feature that allows the users to capture the landmarks, monuments, statues, etc. around them and get information about them from the ***ETLAS*** database directly.  
-The application is built using **Django** and **Django REST Framework**, along with **Celery** for the background tasks and **Redis** as a broker for Celery. It also uses **PostgreSQL** as a database and **AWS S3** for the cloud storage.
+The application is built using **Django** and **Django REST Framework**, along with **Celery** for the background tasks and **Redis** as a broker for Celery. It also uses **PostgreSQL** as a database and **Backblaze B2 Storage** for the cloud storage.
 
 ## Features
 
