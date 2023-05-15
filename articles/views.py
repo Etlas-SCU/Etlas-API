@@ -1,6 +1,7 @@
+from rest_framework import generics
+
 from .models import Article
 from .serializers import ArticlesSerializers
-from rest_framework import generics
 
 
 class ArticlesList(generics.ListAPIView):

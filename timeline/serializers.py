@@ -1,8 +1,10 @@
 import math
 
-from rest_framework import serializers
-from .models import HistoryTimeline, Era
 import environ
+from rest_framework import serializers
+from rest_framework.fields import SerializerMethodField
+
+from .models import HistoryTimeline, Era
 
 env = environ.Env()
 
@@ -39,13 +41,14 @@ class EraSerializer(serializers.ModelSerializer):
 
 
 class HistoryTimelineSerializer(serializers.ModelSerializer):
-    eras = EraSerializer(many=True, read_only=True)
+    sorted_eras = SerializerMethodField()
     timeline_start_date = serializers.SerializerMethodField()
     timeline_end_date = serializers.SerializerMethodField()
 
     class Meta:
         model = HistoryTimeline
-        fields = ['id', 'timeline_name', 'timeline_start_date', 'timeline_end_date', 'timeline_description', 'eras']
+        fields = ['id', 'timeline_name', 'timeline_start_date', 'timeline_end_date', 'timeline_description',
+                  'sorted_eras']
 
     def get_timeline_start_date(self, obj):
         if obj.timeline_start == -math.inf:
@@ -62,3 +65,6 @@ class HistoryTimelineSerializer(serializers.ModelSerializer):
             return f"{abs(obj.timeline_end)} BC"
         else:
             return f"{obj.timeline_end} AD"
+
+    def get_sorted_eras(self, obj):
+        return EraSerializer(obj.eras.order_by('era_start'), many=True).data

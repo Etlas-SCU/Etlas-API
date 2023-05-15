@@ -1,4 +1,5 @@
 from django.urls import path
+
 from .views import HistoryTimelineList, HistoryTimelineDetail
 
 app_name = 'timeline'

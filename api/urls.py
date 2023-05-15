@@ -15,10 +15,9 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-
-from rest_framework import permissions
-from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
+from drf_yasg.views import get_schema_view
+from rest_framework import permissions
 
 schema_view = get_schema_view(
     openapi.Info(
@@ -39,8 +38,8 @@ urlpatterns = [
     path("timeline/", include("timeline.urls")),
     path("tours/", include("tours.urls")),
     path("articles/", include("articles.urls")),
-    path("questions/",include("knowledge_check.urls")),
-    path("users/",include("users.urls")),
+    path("questions/", include("knowledge_check.urls")),
+    path("users/", include("users.urls")),
     path("auth/", include("authentication.urls")),
     path("social-auth/", include("social_auth.urls")),
     path("monuments/", include("monuments.urls")),
