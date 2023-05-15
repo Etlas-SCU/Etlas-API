@@ -1,7 +1,9 @@
+from django.core.files.storage import default_storage
 from django.db import models
 from django.db.models.signals import pre_delete
 from django.dispatch import receiver
-from django.core.files.storage import default_storage
+
+from monuments.models import Monument
 
 
 class Article(models.Model):
@@ -9,6 +11,7 @@ class Article(models.Model):
     date = models.DateField()
     image = models.ImageField(upload_to="articles_images/")
     description = models.TextField()
+    monuments = models.ManyToManyField(Monument, related_name='articles', blank=True)
 
     def __str__(self):
         return self.article_title
