@@ -1,3 +1,10 @@
-from django.shortcuts import render
+from rest_framework import generics
 
-# Create your views here.
+from monuments.models import Monument
+from monuments.serializers import MonumentSerializers
+
+
+class MonumentListView(generics.ListAPIView):
+    """ List all Monuments """
+    queryset = Monument.objects.all()
+    serializer_class = MonumentSerializers
