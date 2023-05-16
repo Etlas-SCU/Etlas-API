@@ -3,12 +3,15 @@ from django.db import models
 from django.db.models.signals import pre_delete
 from django.dispatch import receiver
 
+from monuments.models import Monument
+
 
 class Article(models.Model):
     article_title = models.CharField(max_length=200)
     date = models.DateField()
     image = models.ImageField(upload_to="articles_images/")
     description = models.TextField()
+    monuments = models.ManyToManyField(Monument, related_name='articles', blank=True)
 
     def __str__(self):
         return self.article_title
