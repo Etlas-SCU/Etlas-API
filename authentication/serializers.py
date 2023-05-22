@@ -45,11 +45,8 @@ class RegisterSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['id', 'email', 'full_name', 'password', 'confirm_password', 'address', 'phone_number', 'image_url',
-                  'best_score']
-        extra_kwargs = {
-            'best_score': {'read_only': True},
-        }
+        fields = ['id', 'email', 'full_name', 'password', 'confirm_password', 'address', 'phone_number', 'image_url']
+        
 
 
 class EmailVerficationSerializer(serializers.Serializer):
@@ -73,8 +70,9 @@ class LoginSerializer(serializers.ModelSerializer):
     tokens = serializers.SerializerMethodField()
 
     def get_image_url(self, obj):
-        if obj.image:
-            return f'https://{env("AWS_STORAGE_BUCKET_NAME")}.s3.{env("AWS_S3_REGION_NAME")}.backblazeb2.com/media/{obj.image}'
+        user = User.objects.get(email=obj['email'])
+        if user.image:
+            return f'https://{env("AWS_STORAGE_BUCKET_NAME")}.s3.{env("AWS_S3_REGION_NAME")}.backblazeb2.com/media/{user.image}'
         else:
             return None
 
@@ -89,10 +87,8 @@ class LoginSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['id', 'email', 'password', 'full_name', 'address', 'phone_number', 'image_url', 'best_score',
-                  'tokens']
+        fields = ['id', 'email', 'password', 'full_name', 'address', 'phone_number', 'image_url', 'tokens']
         extra_kwargs = {
-            'best_score': {'read_only': True},
             'address': {'read_only': True},
             'phone_number': {'read_only': True},
             'image_url': {'read_only': True},
@@ -119,14 +115,7 @@ class LoginSerializer(serializers.ModelSerializer):
             raise AuthenticationFailed('Email is not verified')
 
         return {
-            'id': user.id,
-            'full_name': user.full_name,
             'email': user.email,
-            'address': user.address,
-            'phone_number': user.phone_number,
-            'image': user.image,
-            'best_score': user.best_score,
-            'tokens': user.tokens
         }
 
 
