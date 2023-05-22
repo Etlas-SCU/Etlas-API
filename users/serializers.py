@@ -18,3 +18,10 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['id', 'full_name', 'email', 'address', 'phone_number', 'image_url']
+
+class BestScoreSerializer(serializers.ModelSerializer):
+    new_score = serializers.IntegerField(required=True)
+
+    class Meta:
+        model = User
+        fields = ['new_score']
