@@ -1,10 +1,13 @@
 from rest_framework import viewsets, status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from .models import User
 from .permissions import IsTheCurrentUser
-from .serializers import UserSerializer, BestScoreSerializer
+from .serializers import UserSerializer, BestScoreSerializer, ImageUpdateSerializer
+
+from rest_framework.parsers import MultiPartParser, FormParser
 
 
 # Create your views here.
@@ -89,3 +92,15 @@ class BestScoreMonumentsView(viewsets.ModelViewSet):
         user.save()
 
         return Response({'best_score_monuments': user.best_score_monuments}, status=status.HTTP_200_OK)
+
+class ChangeImageView(APIView):
+    permission_classes = [IsAuthenticated]
+    parser_classes = [MultiPartParser, FormParser]
+    
+    def post(self, request, *args, **kwargs):
+        user = User.objects.get(id=request.user.id)
+        serializer = ImageUpdateSerializer(user, data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+        return Response(serializer.data, status=status.HTTP_200_OK)

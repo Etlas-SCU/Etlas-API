@@ -31,4 +31,5 @@ urlpatterns = [
     path('best-score-statues/', best_score_statues, name="best-score-statues"),
     path('best-score-landmarks/', best_score_landmarks, name="best-score-landmarks"),
     path('best-score-monuments/', best_score_monuments, name="best-score-monuments"),
+    path('profile-image/', views.ChangeImageView.as_view(), name='profile-image'),
 ]
