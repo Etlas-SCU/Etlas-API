@@ -4,7 +4,6 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from .models import User
-from .permissions import IsTheCurrentUser
 from .serializers import UserSerializer, BestScoreSerializer, ImageUpdateSerializer
 
 from rest_framework.parsers import MultiPartParser, FormParser
@@ -15,8 +14,20 @@ from rest_framework.parsers import MultiPartParser, FormParser
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    permission_classes = [IsAuthenticated & IsTheCurrentUser]
+    permission_classes = [IsAuthenticated]
 
+    def retrieve(self, request, *args, **kwargs):
+        user = User.objects.get(id=request.user.id)
+        serializer = self.serializer_class(user)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+    def partial_update(self, request, *args, **kwargs):
+        user = User.objects.get(id=request.user.id)
+        serializer = self.serializer_class(user, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_200_OK)    
+    
 
 class TotalBestScoreView(viewsets.ModelViewSet):
     queryset = User.objects.all()
