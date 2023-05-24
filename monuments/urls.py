@@ -5,4 +5,5 @@ from . import views
 app_name = "monuments"
 urlpatterns = [
     path("", views.MonumentListView.as_view()),
+    path("<int:pk>/", views.MonumentDetailView.as_view()),
 ]

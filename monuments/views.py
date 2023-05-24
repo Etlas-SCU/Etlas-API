@@ -8,3 +8,9 @@ class MonumentListView(generics.ListAPIView):
     """ List all Monuments """
     queryset = Monument.objects.all()
     serializer_class = MonumentSerializers
+
+
+class MonumentDetailView(generics.RetrieveAPIView):
+    """ Retrieve a single Monument """
+    queryset = Monument.objects.all()
+    serializer_class = MonumentSerializers
