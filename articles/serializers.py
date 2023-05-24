@@ -1,7 +1,7 @@
 import environ
 from rest_framework import serializers
 
-from monuments.serializers import MonumentSerializers
+from monuments.serializers import MonumentSerializer
 from .models import Article, Section
 
 env = environ.Env()
@@ -16,7 +16,7 @@ class SectionSerializers(serializers.ModelSerializer):
 class ArticlesSerializers(serializers.ModelSerializer):
     sections = SectionSerializers(many=True, read_only=True)
     image_url = serializers.SerializerMethodField()
-    monuments = MonumentSerializers(many=True, read_only=True)
+    monuments = MonumentSerializer(many=True, read_only=True)
 
     class Meta:
         model = Article

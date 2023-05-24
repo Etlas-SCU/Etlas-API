@@ -2,16 +2,18 @@ from django.core.files.storage import default_storage
 from django.db import models
 from django.db.models.signals import pre_delete
 from django.dispatch import receiver
+from django_extensions.db.models import TimeStampedModel
 
 from monuments.models import Monument
 
 
-class Article(models.Model):
+class Article(TimeStampedModel):
     article_title = models.CharField(max_length=200)
     date = models.DateField()
     image = models.ImageField(upload_to="articles_images/")
     description = models.TextField()
     monuments = models.ManyToManyField(Monument, related_name='articles', blank=True)
+    updated = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return self.article_title

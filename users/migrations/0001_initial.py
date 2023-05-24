@@ -53,7 +53,8 @@ class Migration(migrations.Migration):
                 ('otp', models.CharField(max_length=4)),
                 ('created_at', models.DateTimeField(auto_now_add=True)),
                 (
-                'user', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
+                    'user',
+                    models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
             ],
         ),
     ]
