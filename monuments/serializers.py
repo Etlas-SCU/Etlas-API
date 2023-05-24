@@ -6,4 +6,4 @@ from .models import Monument
 class MonumentSerializers(serializers.ModelSerializer):
     class Meta:
         model = Monument
-        fields = ['id', 'name']
+        fields = ['id', 'name', 'created_at', 'updated_at']
