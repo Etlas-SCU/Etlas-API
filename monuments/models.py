@@ -8,3 +8,13 @@ class Monument(TimeStampedModel):
 
     def __str__(self):
         return self.name
+
+
+class ArticleMonument(models.Model):
+    article = models.ForeignKey("articles.Article", on_delete=models.CASCADE, related_name="article_monuments",
+                                blank=True)
+    monument = models.ForeignKey("monuments.Monument", on_delete=models.CASCADE, related_name="article_monuments",
+                                 blank=True)
+
+    def __str__(self):
+        return f"{self.article.article_title} - {self.monument.name}"

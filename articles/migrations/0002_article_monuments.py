@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ('monuments', '0001_initial'),
         ('articles', '0001_initial'),
