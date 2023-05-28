@@ -13,7 +13,7 @@ class SectionSerializers(serializers.ModelSerializer):
         fields = ['id', 'section_title', 'description']
 
 
-class ArticlesSerializers(serializers.ModelSerializer):
+class ArticleSerializer(serializers.ModelSerializer):
     sections = SectionSerializers(many=True, read_only=True)
     image_url = serializers.SerializerMethodField()
     monuments = MonumentSerializer(many=True, read_only=True)
