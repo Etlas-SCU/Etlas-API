@@ -6,10 +6,17 @@ from .models import Favorite
 
 
 class FavoriteSerializer(serializers.ModelSerializer):
-    get_monument = MonumentSerializer(read_only=True)
-    get_article = ArticleSerializer(read_only=True)
+    monument = MonumentSerializer(read_only=True)
+    article = ArticleSerializer(read_only=True)
 
     class Meta:
         model = Favorite
-        fields = ['id', 'user', 'get_monument', 'get_article', 'created_at']
+        fields = ['id', 'monument', 'article', 'created_at']
         read_only_fields = ["id", "user", "created_at"]
+
+
+class FavoriteCreateDestroySerializer(serializers.Serializer):
+    id = serializers.IntegerField(required=True)
+
+    class Meta:
+        fields = ['id']
