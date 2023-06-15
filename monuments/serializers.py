@@ -7,3 +7,7 @@ class MonumentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Monument
         fields = ['id', 'name', 'created', 'updated']
+
+class ImageSerializer(serializers.Serializer):
+    image = serializers.ImageField(required=True)
+    
