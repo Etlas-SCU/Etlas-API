@@ -1,5 +1,5 @@
 # Base Image for Python 3.11 
-FROM python:3.11-slim-buster as build-base
+FROM ubuntu:jammy as build-base
 
 # Set environment variables
 ENV PYTHONUNBUFFERED=1 \
@@ -15,11 +15,15 @@ ENV PYTHONUNBUFFERED=1 \
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
+  python3 \
+  python3-pip \
   curl \
   python3-dev \
   libpq-dev \
-  build-essential 
-
+  build-essential \
+  libgl1-mesa-glx \
+  libglib2.0-0
+ 
 # Install poetry 
 RUN curl -sSL https://install.python-poetry.org | python3 -
 
