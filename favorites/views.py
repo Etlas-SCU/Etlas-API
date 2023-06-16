@@ -71,7 +71,8 @@ class FavoriteMonumentDeleteView(generics.DestroyAPIView):
             obj_id = serializer.validated_data['id']
             instance = get_object_or_404(Favorite, user=self.request.user, monument=obj_id)
             self.perform_destroy(instance)
-            return Response({"message": "The Monument has been deleted from your favorites."}, status=status.HTTP_204_NO_CONTENT)
+            return Response({"message": "The Monument has been deleted from your favorites."},
+                            status=status.HTTP_204_NO_CONTENT)
         except Http404:
             return Response({'detail': 'Monument not found.'}, status=status.HTTP_404_NOT_FOUND)
 

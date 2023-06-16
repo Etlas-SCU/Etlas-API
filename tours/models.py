@@ -12,7 +12,7 @@ class Tour(models.Model):
         return self.title
 
     class Meta:
-        ordering = ('title', )
+        ordering = ('title',)
 
 
 class TourSection(models.Model):

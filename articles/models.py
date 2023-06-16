@@ -24,7 +24,7 @@ class Article(TimeStampedModel):
         super().delete(*args, **kwargs)
 
     class Meta:
-        ordering = ('-updated', )
+        ordering = ('-updated',)
 
 
 class Section(models.Model):

@@ -10,7 +10,7 @@ class Monument(TimeStampedModel):
         return self.name
 
     class Meta:
-        ordering = ('-updated', )
+        ordering = ('-updated',)
 
 
 class ArticleMonument(models.Model):

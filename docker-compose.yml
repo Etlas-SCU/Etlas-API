@@ -6,7 +6,7 @@ services:
   
   api: &api
     platform: linux/amd64
-    build: 
+    build:
       context: .
     env_file:
       - .env
@@ -17,7 +17,7 @@ services:
 
   celeryworker:
     <<: *api
-    ports: []
+    ports: [ ]
     command: poetry run celery -A api worker -l info
     depends_on:
       - api

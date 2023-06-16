@@ -8,6 +8,6 @@ class MonumentSerializer(serializers.ModelSerializer):
         model = Monument
         fields = ['id', 'name', 'created', 'updated']
 
+
 class ImageSerializer(serializers.Serializer):
     image = serializers.ImageField(required=True)
-    
