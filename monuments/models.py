@@ -9,6 +9,9 @@ class Monument(TimeStampedModel):
     def __str__(self):
         return self.name
 
+    class Meta:
+        ordering = ('-updated', )
+
 
 class ArticleMonument(models.Model):
     article = models.ForeignKey("articles.Article", on_delete=models.CASCADE, related_name="article_monuments",
