@@ -23,6 +23,9 @@ class Article(TimeStampedModel):
         default_storage.delete(self.image.name)
         super().delete(*args, **kwargs)
 
+    class Meta:
+        ordering = ('-updated', )
+
 
 class Section(models.Model):
     article = models.ForeignKey(Article, related_name='sections', on_delete=models.CASCADE)

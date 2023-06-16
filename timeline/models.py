@@ -16,6 +16,9 @@ class HistoryTimeline(models.Model):
     def __str__(self):
         return self.timeline_name
 
+    class Meta:
+        ordering = ('timeline_start', )
+
 
 class Era(models.Model):
     """ Era model for timeline app """
