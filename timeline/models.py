@@ -17,7 +17,7 @@ class HistoryTimeline(models.Model):
         return self.timeline_name
 
     class Meta:
-        ordering = ('timeline_start', )
+        ordering = ('timeline_start',)
 
 
 class Era(models.Model):

@@ -46,7 +46,6 @@ class RegisterSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['id', 'email', 'full_name', 'password', 'confirm_password', 'address', 'phone_number', 'image_url']
-        
 
 
 class EmailVerficationSerializer(serializers.Serializer):

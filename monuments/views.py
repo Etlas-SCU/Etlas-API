@@ -1,16 +1,14 @@
+import environ
+import numpy as np
+from PIL import Image
 from rest_framework import generics, status
-from rest_framework.views import APIView
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.response import Response
+from rest_framework.views import APIView
+from roboflow import Roboflow
 
 from monuments.models import Monument
 from monuments.serializers import MonumentSerializer, ImageSerializer
-
-from roboflow import Roboflow
-from PIL import Image
-import numpy as np
-
-import environ
 
 env = environ.Env()
 
@@ -18,12 +16,14 @@ rf = Roboflow(api_key=env('ROBOFLOW_API_KEY'))
 project = rf.workspace().project("monuments-detection")
 model = project.version(1).model
 
+
 def detect_monuments(image):
     prediction = model.predict(image, confidence=70, overlap=25).json()['predictions']
     if not len(prediction):
         return "No monuments detected"
     else:
         return prediction[0]['class']
+
 
 class MonumentListView(generics.ListAPIView):
     """ List all Monuments """
@@ -36,8 +36,9 @@ class MonumentDetailView(generics.RetrieveAPIView):
     queryset = Monument.objects.all()
     serializer_class = MonumentSerializer
 
+
 class MonumentDetectionView(APIView):
-    parser_classes  = (MultiPartParser, FormParser)
+    parser_classes = (MultiPartParser, FormParser)
 
     def post(self, request, *args, **kwargs):
         serializer = ImageSerializer(data=request.data)

@@ -19,6 +19,7 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = ['id', 'full_name', 'email', 'address', 'phone_number', 'image_url']
 
+
 class BestScoreSerializer(serializers.ModelSerializer):
     new_score = serializers.IntegerField(required=True)
 
@@ -38,9 +39,9 @@ class ImageUpdateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['image','image_url']
+        fields = ['image', 'image_url']
         extra_kwargs = {
-            'image' : {'write_only': True}
+            'image': {'write_only': True}
         }
 
     def update(self, instance, validated_data):
