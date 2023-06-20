@@ -49,3 +49,8 @@ class ImageUpdateSerializer(serializers.ModelSerializer):
         instance.image = validated_data.get('image', None)
         instance.save()
         return instance
+
+class ChangePasswordSerializer(serializers.Serializer):
+    old_password = serializers.CharField(required=True)
+    new_password = serializers.CharField(min_length=8, required=True)
+    confirm_new_password = serializers.CharField(min_length=8, required=True)

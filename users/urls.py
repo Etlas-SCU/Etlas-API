@@ -26,6 +26,10 @@ best_score_monuments = views.BestScoreMonumentsView.as_view({
     'put': 'update',
 })
 
+change_password = views.ChangePasswordView.as_view({
+    'put': 'update',
+})
+
 urlpatterns = [
     path('', user_detail, name="user-detail"),
     path('total-best-score/', total_best_score, name="total-best-score"),
@@ -33,4 +37,5 @@ urlpatterns = [
     path('best-score-landmarks/', best_score_landmarks, name="best-score-landmarks"),
     path('best-score-monuments/', best_score_monuments, name="best-score-monuments"),
     path('profile-image/', views.ChangeImageView.as_view(), name='profile-image'),
+    path('change-password/', change_password, name='change-password'),
 ]
