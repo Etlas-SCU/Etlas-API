@@ -60,7 +60,7 @@ class VerifyEmailView(viewsets.ModelViewSet):
             if user.is_verified:
                 return Response({'error': 'User already verified'}, status=status.HTTP_400_BAD_REQUEST)
 
-            time = user.otp.created_at + datetime.timedelta(minutes=1)
+            time = user.otp.created_at + datetime.timedelta(minutes=2)
             current = timezone.now()
             if current > time:
                 return Response({'error': 'OTP expired, request another one'}, status=status.HTTP_400_BAD_REQUEST)
@@ -167,7 +167,7 @@ class CheckResetPasswordOTPView(viewsets.ModelViewSet):
             main_otp = OTP.objects.get(otp=otp)
             user = main_otp.user
 
-            time = user.otp.created_at + datetime.timedelta(minutes=1)
+            time = user.otp.created_at + datetime.timedelta(minutes=2)
             current = timezone.now()
             if current > time:
                 return Response({'error': 'OTP expired, request another one'}, status=status.HTTP_400_BAD_REQUEST)

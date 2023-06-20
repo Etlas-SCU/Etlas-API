@@ -63,7 +63,7 @@ class ResendEmailVerificationSerializer(serializers.Serializer):
 
 
 class LoginSerializer(serializers.ModelSerializer):
-    email = serializers.CharField(max_length=255, required=True)
+    email = serializers.EmailField(max_length=255, required=True)
     password = serializers.CharField(max_length=255, write_only=True, required=True)
     image_url = serializers.SerializerMethodField()
     tokens = serializers.SerializerMethodField()
@@ -104,8 +104,11 @@ class LoginSerializer(serializers.ModelSerializer):
             raise AuthenticationFailed(
                 detail='Please continue your login using ' + filtered_user_by_email[0].auth_provider)
 
+        if not filtered_user_by_email.exists():
+            raise AuthenticationFailed('The email is not registered')
+
         if not user:
-            raise AuthenticationFailed('Invalid credentials, try again')
+            raise AuthenticationFailed('Invalid password, try again')
 
         if not user.is_active:
             raise AuthenticationFailed('Account disabled, contact admin')
