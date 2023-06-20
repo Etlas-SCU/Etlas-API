@@ -5,7 +5,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from .models import User
-from .serializers import UserSerializer, BestScoreSerializer, ImageUpdateSerializer
+from .serializers import UserSerializer, BestScoreSerializer, ImageUpdateSerializer, ChangePasswordSerializer
 
 
 # Create your views here.
@@ -117,3 +117,24 @@ class ChangeImageView(APIView):
         serializer.save()
 
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+class ChangePasswordView(viewsets.ModelViewSet):
+    queryset = User.objects.all()
+    serializer_class = ChangePasswordSerializer
+    permission_classes = [IsAuthenticated]
+
+    def update(self, request, *args, **kwargs):
+        user = User.objects.get(id=request.user.id)
+        serializer = self.serializer_class(data=request.data, instance=user)
+        serializer.is_valid(raise_exception=True)
+
+        if not user.check_password(serializer.validated_data['old_password']):
+            return Response({'old_password': 'Wrong password.'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        if serializer.validated_data['new_password'] != serializer.validated_data['confirm_new_password']:
+            return Response({'confirm_new_password': 'Passwords do not match.'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        user.set_password(serializer.validated_data['new_password'])
+        user.save()
+
+        return Response({'success': 'Password changed successfully.'}, status=status.HTTP_200_OK)
