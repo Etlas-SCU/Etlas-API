@@ -14,7 +14,7 @@ env = environ.Env()
 
 rf = Roboflow(api_key=env('ROBOFLOW_API_KEY'))
 project = rf.workspace().project("monuments-detection")
-model = project.version(1).model
+model = project.version(2).model
 
 
 def detect_monuments(image):
