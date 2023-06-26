@@ -58,6 +58,7 @@ INSTALLED_APPS = [
     "corsheaders",
     'monuments',
     'favorites',
+    'django_celery_beat',
 ]
 
 MIDDLEWARE = [
@@ -205,6 +206,9 @@ CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_BACKEND = 'django-db'
 CELERY_TIMEZONE = 'Africa/Cairo'
+
+# CELERY BEAT SETTINGS
+CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
 
 EMAIL_HOST = env("EMAIL_HOST")
 EMAIL_USE_TLS = env("EMAIL_USE_TLS")

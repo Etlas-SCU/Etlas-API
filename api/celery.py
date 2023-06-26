@@ -4,6 +4,7 @@ import os
 
 from celery import Celery
 from django.conf import settings
+from celery.schedules import crontab
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'api.settings')
 
@@ -18,6 +19,12 @@ app.autodiscover_tasks()
 
 
 # Celery beat settings
+app.conf.beat_schedule = {
+    "clear-blacklisted-tokens-at-midnight": {
+        "task": "authentication.tasks.delete_tokens",
+        "schedule": crontab(hour=0, minute=0)
+    }
+}
 
 
 @app.task(bind=True)
