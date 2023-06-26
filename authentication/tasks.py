@@ -21,4 +21,4 @@ def send_email(self, data):
 def delete_tokens(self):
     BlacklistedToken.objects.filter(token__expires_at__lt=timezone.now()).delete()
     OutstandingToken.objects.filter(expires_at__lt=timezone.now()).delete()
-    return "Deleted!"
+    return "Deleted expired tokens!"
