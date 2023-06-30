@@ -6,7 +6,7 @@ from .models import Monument
 class MonumentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Monument
-        fields = ['id', 'name', 'created', 'updated']
+        fields = ['id', 'name', 'description', 'created', 'updated']
 
 
 class ImageSerializer(serializers.Serializer):
