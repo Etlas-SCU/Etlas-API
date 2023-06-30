@@ -59,6 +59,7 @@ INSTALLED_APPS = [
     'monuments',
     'favorites',
     'django_celery_beat',
+    'contact_us',
 ]
 
 MIDDLEWARE = [
