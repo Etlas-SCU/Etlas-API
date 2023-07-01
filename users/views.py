@@ -5,8 +5,8 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from .models import User
-from .serializers import UserSerializer, BestScoreSerializer, ImageUpdateSerializer
-
+from .serializers import UserSerializer, BestScoreSerializer, ImageUpdateSerializer, ChangePasswordSerializer
+from knowledge_check.models import Question
 
 # Create your views here.
 
@@ -49,7 +49,7 @@ class BestScoreStatuesView(viewsets.ModelViewSet):
         user = User.objects.get(id=request.user.id)
         best_score_statues = user.best_score_statues
 
-        return Response({'best_score_statues': best_score_statues}, status=status.HTTP_200_OK)
+        return Response({'best_score_statues': f'{best_score_statues}/{Question.objects.filter(label= "statues").count()}'}, status=status.HTTP_200_OK)
 
     def update(self, request, *args, **kwargs):
         serializer = self.serializer_class(data=request.data)
@@ -71,7 +71,7 @@ class BestScoreLandmarksView(viewsets.ModelViewSet):
         user = User.objects.get(id=request.user.id)
         best_score_landmarks = user.best_Score_landmarks
 
-        return Response({'best_score_landmarks': best_score_landmarks}, status=status.HTTP_200_OK)
+        return Response({'best_score_landmarks': f'{best_score_landmarks}/{Question.objects.filter(label= "landmarks").count()}'}, status=status.HTTP_200_OK)
 
     def update(self, request, *args, **kwargs):
         serializer = self.serializer_class(data=request.data)
@@ -93,7 +93,7 @@ class BestScoreMonumentsView(viewsets.ModelViewSet):
         user = User.objects.get(id=request.user.id)
         best_score_monuments = user.best_score_monuments
 
-        return Response({'best_score_monuments': best_score_monuments}, status=status.HTTP_200_OK)
+        return Response({'best_score_monuments': f'{best_score_monuments}/{Question.objects.filter(label= "monuments").count()}'}, status=status.HTTP_200_OK)
 
     def update(self, request, *args, **kwargs):
         serializer = self.serializer_class(data=request.data)
@@ -117,3 +117,24 @@ class ChangeImageView(APIView):
         serializer.save()
 
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+class ChangePasswordView(viewsets.ModelViewSet):
+    queryset = User.objects.all()
+    serializer_class = ChangePasswordSerializer
+    permission_classes = [IsAuthenticated]
+
+    def update(self, request, *args, **kwargs):
+        user = User.objects.get(id=request.user.id)
+        serializer = self.serializer_class(data=request.data, instance=user)
+        serializer.is_valid(raise_exception=True)
+
+        if not user.check_password(serializer.validated_data['old_password']):
+            return Response({'old_password': 'Wrong password.'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        if serializer.validated_data['new_password'] != serializer.validated_data['confirm_new_password']:
+            return Response({'confirm_new_password': 'Passwords do not match.'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        user.set_password(serializer.validated_data['new_password'])
+        user.save()
+
+        return Response({'success': 'Password changed successfully.'}, status=status.HTTP_200_OK)

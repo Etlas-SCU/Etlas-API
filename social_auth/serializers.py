@@ -6,14 +6,23 @@ from . import facebook, google, twitterhelper
 from .register import register_social_user
 
 env = environ.Env()
-GOOGLE_ID = env("GOOGLE_ID")
 
+Choices = (
+    ('web', 'web'),
+    ('android', 'android'),
+    ('ios', 'ios')
+)
 
 class GoogleSocialAuthSerializer(serializers.Serializer):
-    auth_token = serializers.CharField()
+    auth_token = serializers.CharField(required=True)
+    front_end = serializers.ChoiceField(choices=Choices, required=True)
 
-    def validate_auth_token(self, auth_token):
+    def validate(self, attrs):
+        auth_token = attrs.get('auth_token')
+        front_end = attrs.get('front_end')
+
         user_data = google.Google.validate(auth_token)
+        GOOGLE_ID = env(f'GOOGLE_{front_end.upper()}_ID')
         try:
             user_data['sub']
         except:
@@ -35,27 +44,24 @@ class GoogleSocialAuthSerializer(serializers.Serializer):
 
 class FacebookSocialAuthSerializer(serializers.Serializer):
     """Handles serialization of facebook related data"""
-    auth_token = serializers.CharField()
+    auth_token = serializers.CharField(required=True)
 
     def validate_auth_token(self, auth_token):
         user_data = facebook.Facebook.validate(auth_token)
-
+        
         try:
             user_id = user_data['id']
             email = user_data['email']
             name = user_data['name']
-            provider = 'facebook'
-            return register_social_user(
-                provider=provider,
-                user_id=user_id,
-                email=email,
-                name=name
-            )
         except Exception as identifier:
+            raise serializers.ValidationError('The token is invalid or expired. Please login again.')
+        
+        user_id = user_data['id']
+        email = user_data['email']
+        name = user_data['name']
+        provider = 'facebook'
 
-            raise serializers.ValidationError(
-                'The token is invalid or expired. Please login again.'
-            )
+        return register_social_user( provider=provider, user_id=user_id, email=email, name=name)
 
 
 class TwitterAuthSerializer(serializers.Serializer):

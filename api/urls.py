@@ -45,4 +45,5 @@ urlpatterns = [
     path("social-auth/", include("social_auth.urls")),
     path("monuments/", include("monuments.urls")),
     path("favorites/", include("favorites.urls")),
+    path("contact-us/", include("contact_us.urls")),
 ]
