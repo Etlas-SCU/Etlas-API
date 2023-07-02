@@ -31,7 +31,7 @@ SECRET_KEY = env('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env('DEBUG')
 
-ALLOWED_HOSTS = [env('ALLOWED_HOSTS')]
+ALLOWED_HOSTS = env('ALLOWED_HOSTS').split(',')
 
 AUTH_USER_MODEL = 'users.User'
 
@@ -73,6 +73,8 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
+
+CSRF_TRUSTED_ORIGINS=[env('CSRF_TRUSTED_ORIGINS')]
 
 CORS_ALLOW_ALL_ORIGINS = True
 
