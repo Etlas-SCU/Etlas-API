@@ -43,15 +43,20 @@ class TotalBestScoreView(viewsets.ModelViewSet):
 class BestScoreStatuesView(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = BestScoreSerializer
-    permission_classes = [IsAuthenticated]
 
     def retrieve(self, request, *args, **kwargs):
+        if request.user.is_anonymous:
+            return Response({'best_score_statues': f'0/{Question.objects.filter(label= "statue").count()}'}, status=status.HTTP_200_OK)
+
         user = User.objects.get(id=request.user.id)
         best_score_statues = user.best_score_statues
 
-        return Response({'best_score_statues': f'{best_score_statues}/{Question.objects.filter(label= "statues").count()}'}, status=status.HTTP_200_OK)
+        return Response({'best_score_statues': f'{best_score_statues}/{Question.objects.filter(label= "statue").count()}'}, status=status.HTTP_200_OK)
 
     def update(self, request, *args, **kwargs):
+        if request.user.is_anonymous:
+            return Response({"detail": "Authentication credentials were not provided."}, status=status.HTTP_401_UNAUTHORIZED)
+
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
 
@@ -65,15 +70,20 @@ class BestScoreStatuesView(viewsets.ModelViewSet):
 class BestScoreLandmarksView(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = BestScoreSerializer
-    permission_classes = [IsAuthenticated]
 
     def retrieve(self, request, *args, **kwargs):
+        if request.user.is_anonymous:
+            return Response({'best_score_landmarks': f'0/{Question.objects.filter(label= "landmark").count()}'}, status=status.HTTP_200_OK)
+
         user = User.objects.get(id=request.user.id)
         best_score_landmarks = user.best_Score_landmarks
 
-        return Response({'best_score_landmarks': f'{best_score_landmarks}/{Question.objects.filter(label= "landmarks").count()}'}, status=status.HTTP_200_OK)
+        return Response({'best_score_landmarks': f'{best_score_landmarks}/{Question.objects.filter(label= "landmark").count()}'}, status=status.HTTP_200_OK)
 
     def update(self, request, *args, **kwargs):
+        if request.user.is_anonymous:
+            return Response({"detail": "Authentication credentials were not provided."}, status=status.HTTP_401_UNAUTHORIZED)
+
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
 
@@ -87,15 +97,20 @@ class BestScoreLandmarksView(viewsets.ModelViewSet):
 class BestScoreMonumentsView(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = BestScoreSerializer
-    permission_classes = [IsAuthenticated]
 
     def retrieve(self, request, *args, **kwargs):
+        if request.user.is_anonymous:
+            return Response({'best_score_monuments': f'0/{Question.objects.filter(label= "monument").count()}'}, status=status.HTTP_200_OK)
+
         user = User.objects.get(id=request.user.id)
         best_score_monuments = user.best_score_monuments
 
-        return Response({'best_score_monuments': f'{best_score_monuments}/{Question.objects.filter(label= "monuments").count()}'}, status=status.HTTP_200_OK)
+        return Response({'best_score_monuments': f'{best_score_monuments}/{Question.objects.filter(label= "monument").count()}'}, status=status.HTTP_200_OK)
 
     def update(self, request, *args, **kwargs):
+        if request.user.is_anonymous:
+            return Response({"detail": "Authentication credentials were not provided."}, status=status.HTTP_401_UNAUTHORIZED)
+
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
 
