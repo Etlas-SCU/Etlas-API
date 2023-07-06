@@ -5,7 +5,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from .models import Favorite
-from .serializers import FavoriteSerializer, FavoriteCreateDestroySerializer
+from .serializers import FavoriteSerializer, FavoriteCreateDestroySerializer, IsFavoriteSerializer
 
 
 class FavoriteListView(generics.ListAPIView):
