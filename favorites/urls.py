@@ -10,5 +10,5 @@ urlpatterns = [
     path("article/add/", views.FavoriteArticleCreateView.as_view(), name="article-add"),
     path("monument/delete/", views.FavoriteMonumentDeleteView.as_view(), name="monument-delete"),
     path("article/delete/", views.FavoriteArticleDeleteView.as_view(), name="article-delete"),
-    path("is_favorite/", views.IsFavoriteView.as_view(), name="is-favorite"),
+    path("is-favorite/", views.IsFavoriteView.as_view(), name="is-favorite"),
 ]
