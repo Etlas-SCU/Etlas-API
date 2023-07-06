@@ -115,6 +115,6 @@ class IsFavoriteView(generics.RetrieveAPIView):
         if article_id:
             favorite = Favorite.objects.filter(user=self.request.user, article=article_id)
 
-        if favorite.exists():
-            return Response({"is_favorite": True}, status=status.HTTP_200_OK)
-        return Response({"is_favorite": False}, status=status.HTTP_200_OK)
+        if favorite is None:
+            return Response({"is_favorite": False}, status=status.HTTP_200_OK)
+        return Response({"is_favorite": True}, status=status.HTTP_200_OK)
