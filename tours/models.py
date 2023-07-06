@@ -7,6 +7,7 @@ from django.dispatch import receiver
 class Tour(models.Model):
     title = models.CharField(max_length=100)
     description = models.TextField()
+    rating = models.FloatField(default=4.5)
 
     def __str__(self):
         return self.title
