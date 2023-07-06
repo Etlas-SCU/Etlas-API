@@ -5,7 +5,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from .models import Favorite
-from .serializers import FavoriteSerializer, FavoriteCreateDestroySerializer
+from .serializers import FavoriteSerializer, FavoriteCreateDestroySerializer, IsFavoriteSerializer
 
 
 class FavoriteListView(generics.ListAPIView):
@@ -94,3 +94,19 @@ class FavoriteArticleDeleteView(generics.DestroyAPIView):
                             status=status.HTTP_204_NO_CONTENT)
         except Http404:
             return Response({'detail': 'Article not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+
+class IsFavoriteView(generics.RetrieveAPIView):
+    queryset = Favorite.objects.all()
+    serializer_class = IsFavoriteSerializer
+    lookup_field = None
+
+    def get(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return Response({"is_favorite": False}, status=status.HTTP_200_OK)
+        monument_id = request.query_params.get('monument_id', None)
+        article_id = request.query_params.get('article_id', None)
+        favorite = Favorite.objects.filter(user=self.request.user, monument_id=monument_id, article_id=article_id)
+        if favorite.exists():
+            return Response({"is_favorite": True}, status=status.HTTP_200_OK)
+        return Response({"is_favorite": False}, status=status.HTTP_200_OK)
