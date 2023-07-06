@@ -20,11 +20,3 @@ class FavoriteCreateDestroySerializer(serializers.Serializer):
 
     class Meta:
         fields = ['id']
-
-
-class IsFavoriteSerializer(serializers.Serializer):
-    monument_id = serializers.IntegerField(required=False)
-    article_id = serializers.IntegerField(required=False)
-
-    class Meta:
-        fields = ['monument_id', 'article_id']

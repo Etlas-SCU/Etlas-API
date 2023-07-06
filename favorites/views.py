@@ -1,11 +1,11 @@
 from django.http import Http404
-from rest_framework import generics, status
+from rest_framework import generics, status, views
 from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from .models import Favorite
-from .serializers import FavoriteSerializer, FavoriteCreateDestroySerializer, IsFavoriteSerializer
+from .serializers import FavoriteSerializer, FavoriteCreateDestroySerializer
 
 
 class FavoriteListView(generics.ListAPIView):
@@ -96,24 +96,18 @@ class FavoriteArticleDeleteView(generics.DestroyAPIView):
             return Response({'detail': 'Article not found.'}, status=status.HTTP_404_NOT_FOUND)
 
 
-class IsFavoriteView(generics.RetrieveAPIView):
-    queryset = Favorite.objects.all()
-    serializer_class = IsFavoriteSerializer
-    lookup_field = None
-
-    def get(self, request, *args, **kwargs):
+class IsFavoriteView(views.APIView):
+    def post(self, request, *args, **kwargs):
         if not request.user.is_authenticated:
             return Response({"is_favorite": False}, status=status.HTTP_200_OK)
-        serializer = self.get_serializer(data=request.data)
+        serializer = IsFavoriteSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        monument_id = serializer.validated_data.get('monument_id')
-        article_id = serializer.validated_data.get('article_id')
+        data = serializer.validated_data
         favorite = None
-
-        if monument_id:
-            favorite = Favorite.objects.filter(user=self.request.user, monument=monument_id)
-        if article_id:
-            favorite = Favorite.objects.filter(user=self.request.user, article=article_id)
+        if data['monument_id']:
+            favorite = Favorite.objects.filter(user=self.request.user, monument_id=data['monument_id'])
+        elif data['article_id']:
+            favorite = Favorite.objects.filter(user=self.request.user, article_id=data['article_id'])
 
         if favorite is None:
             return Response({"is_favorite": False}, status=status.HTTP_200_OK)
