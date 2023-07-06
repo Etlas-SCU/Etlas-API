@@ -104,8 +104,10 @@ class IsFavoriteView(generics.RetrieveAPIView):
     def get(self, request, *args, **kwargs):
         if not request.user.is_authenticated:
             return Response({"is_favorite": False}, status=status.HTTP_200_OK)
-        monument_id = request.query_params.get('monument_id', None)
-        article_id = request.query_params.get('article_id', None)
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        monument_id = serializer.validated_data.get('monument_id')
+        article_id = serializer.validated_data.get('article_id')
         favorite = Favorite.objects.filter(user=self.request.user, monument_id=monument_id, article_id=article_id)
         if favorite.exists():
             return Response({"is_favorite": True}, status=status.HTTP_200_OK)
