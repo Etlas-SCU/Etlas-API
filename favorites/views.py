@@ -105,10 +105,10 @@ class IsFavoriteView(views.APIView):
         data = serializer.validated_data
         favorite = None
         if data.get('monument_id'):
-            favorite = Favorite.objects.filter(user=self.request.user, monument_id=data['monument_id'])
+            favorite = Favorite.objects.filter(user=self.request.user, monument_id=data.get('monument_id'))
         elif data.get('article_id'):
-            favorite = Favorite.objects.filter(user=self.request.user, article_id=data['article_id'])
+            favorite = Favorite.objects.filter(user=self.request.user, article_id=data.get('article_id'))
 
         if favorite is None:
             return Response({"is_favorite": False}, status=status.HTTP_200_OK)
-        return Response({"is_favorite": True}, status=status.HTTP_200_OK)
+        return Response({"is_favorite": favorite.exists()}, status=status.HTTP_200_OK)
