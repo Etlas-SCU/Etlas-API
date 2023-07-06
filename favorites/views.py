@@ -108,7 +108,13 @@ class IsFavoriteView(generics.RetrieveAPIView):
         serializer.is_valid(raise_exception=True)
         monument_id = serializer.validated_data.get('monument_id')
         article_id = serializer.validated_data.get('article_id')
-        favorite = Favorite.objects.filter(user=self.request.user, monument_id=monument_id, article_id=article_id)
+        favorite = None
+
+        if monument_id:
+            favorite = Favorite.objects.filter(user=self.request.user, monument=monument_id)
+        if article_id:
+            favorite = Favorite.objects.filter(user=self.request.user, article=article_id)
+
         if favorite.exists():
             return Response({"is_favorite": True}, status=status.HTTP_200_OK)
         return Response({"is_favorite": False}, status=status.HTTP_200_OK)
