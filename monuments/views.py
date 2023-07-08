@@ -47,4 +47,10 @@ class MonumentDetectionView(APIView):
         image = Image.open(image_file)
         image = np.array(image)
         detection = detect_monuments(image)
-        return Response({'status': detection}, status=status.HTTP_200_OK)
+
+        if detection == "No monuments detected":
+            return Response({'Detection': detection}, status=status.HTTP_404_NOT_FOUND)
+        
+        monument = Monument.objects.filter(name__icontains=detection).first()
+
+        return Response({'Detection': detection, 'Monument': MonumentSerializer(monument).data}, status=status.HTTP_200_OK)
