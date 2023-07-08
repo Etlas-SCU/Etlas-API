@@ -8,10 +8,11 @@ env = environ.Env()
 
 class MonumentSerializer(serializers.ModelSerializer):
     three_d_model = serializers.SerializerMethodField()
+    date = serializers.SerializerMethodField()
 
     class Meta:
         model = Monument
-        fields = ['id', 'name', 'description', 'created', 'updated', 'three_d_model']
+        fields = ['id', 'name', 'description', 'created', 'updated', 'three_d_model', 'location', 'date']
 
     def get_three_d_model(self, obj):
         if obj.model_obj and obj.model_texture:
@@ -19,6 +20,17 @@ class MonumentSerializer(serializers.ModelSerializer):
                 'model_obj': f'https://{env("AWS_STORAGE_BUCKET_NAME")}.s3.{env("AWS_S3_REGION_NAME")}.backblazeb2.com/media/{obj.model_obj}',
                 'model_texture': f'https://{env("AWS_STORAGE_BUCKET_NAME")}.s3.{env("AWS_S3_REGION_NAME")}.backblazeb2.com/media/{obj.model_texture}'
             }
+        
+        return None
+    
+    def get_date(self, obj):
+        if(obj.date):
+            if(obj.date < 0):
+                return f"{abs(obj.date)} BC"
+            else:
+                return f"{obj.date} AD"
+        
+        return None
 
 
 class ImageSerializer(serializers.Serializer):

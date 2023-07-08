@@ -11,6 +11,10 @@ class Monument(TimeStampedModel):
                                       help_text="Upload a .png file")
     model_obj = models.FileField(upload_to="monuments_obj/", blank=True, null=True, verbose_name="Model",
                                  help_text="Upload a .obj file")
+    
+    location = models.CharField(max_length=100, blank=True, null=True)
+    
+    date = models.IntegerField(blank=True, null=True)
 
     def __str__(self):
         return self.name
