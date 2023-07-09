@@ -58,42 +58,30 @@ class FavoriteArticleCreateView(generics.CreateAPIView):
         return Response(FavoriteSerializer(favorite).data, status=status.HTTP_201_CREATED)
 
 
-class FavoriteMonumentDeleteView(generics.DestroyAPIView):
-    queryset = Favorite.objects.all()
-    serializer_class = FavoriteCreateDestroySerializer
-    lookup_field = None
+class FavoriteMonumentDeleteView(generics.GenericAPIView):
     permission_classes = [IsAuthenticated]
 
-    def destroy(self, request, *args, **kwargs):
+    def delete(self, request, id, *args, **kwargs):
+        user = self.request.user
         try:
-            serializer = self.get_serializer(data=request.data)
-            serializer.is_valid(raise_exception=True)
-            obj_id = serializer.validated_data['id']
-            instance = get_object_or_404(Favorite, user=self.request.user, monument=obj_id)
-            self.perform_destroy(instance)
-            return Response({"message": "The Monument has been deleted from your favorites."},
-                            status=status.HTTP_204_NO_CONTENT)
-        except Http404:
-            return Response({'detail': 'Monument not found.'}, status=status.HTTP_404_NOT_FOUND)
+            instance = Favorite.objects.get(user=user, monument_id=id)
+            instance.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        except Favorite.DoesNotExist:
+            return Response({"message": "The Monument is not in your favorites."}, status=status.HTTP_400_BAD_REQUEST)
 
 
-class FavoriteArticleDeleteView(generics.DestroyAPIView):
-    queryset = Favorite.objects.all()
-    serializer_class = FavoriteCreateDestroySerializer
-    lookup_field = None
+class FavoriteArticleDeleteView(generics.GenericAPIView):
     permission_classes = [IsAuthenticated]
 
-    def destroy(self, request, *args, **kwargs):
+    def delete(self, request, id, *args, **kwargs):
+        user = self.request.user
         try:
-            serializer = self.get_serializer(data=request.data)
-            serializer.is_valid(raise_exception=True)
-            obj_id = serializer.validated_data['id']
-            instance = get_object_or_404(Favorite, user=self.request.user, article=obj_id)
-            self.perform_destroy(instance)
-            return Response({"message": "The Article has been deleted from your favorites."},
-                            status=status.HTTP_204_NO_CONTENT)
-        except Http404:
-            return Response({'detail': 'Article not found.'}, status=status.HTTP_404_NOT_FOUND)
+            instance = Favorite.objects.get(user=user, article_id=id)
+            instance.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        except Favorite.DoesNotExist:
+            return Response({"message": "The Article is not in your favorites."}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class IsFavoriteView(views.APIView):
