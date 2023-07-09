@@ -60,6 +60,7 @@ INSTALLED_APPS = [
     'favorites',
     'django_celery_beat',
     'contact_us',
+    'user_payment',
 ]
 
 MIDDLEWARE = [
