@@ -27,7 +27,11 @@ app.conf.beat_schedule = {
     "clear-unverified-users-at-midnight": {
         "task": "users.tasks.clear_unverified_users",
         "schedule": crontab(hour=0, minute=0)
-    }
+    },
+    "refill-scans-left-at-midnight": {
+        "task": "users.tasks.refill_scans_left",
+        "schedule": crontab(hour=0, minute=0)
+    },
 }
 
 

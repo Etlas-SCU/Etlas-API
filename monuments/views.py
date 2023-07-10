@@ -3,6 +3,7 @@ import numpy as np
 from PIL import Image
 from rest_framework import generics, status
 from rest_framework.parsers import MultiPartParser, FormParser
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from roboflow import Roboflow
@@ -39,8 +40,13 @@ class MonumentDetailView(generics.RetrieveAPIView):
 
 class MonumentDetectionView(APIView):
     parser_classes = (MultiPartParser, FormParser)
+    permission_classes = [IsAuthenticated]
 
     def post(self, request, *args, **kwargs):
+        if request.user.scans_left <= 0:
+            return Response({'status': 'You have no scans left'}, status=status.HTTP_403_FORBIDDEN)
+        request.user.scans_left -= 1
+        request.user.save()
         serializer = ImageSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         image_file = request.FILES['image']
