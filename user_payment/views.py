@@ -13,8 +13,6 @@ endpoint_secret = env('WEBHOOK_SECRET_KEY')
 
 
 class StripeWebhook(views.APIView):
-    permission_classes = [IsAuthenticated]
-
     def post(self, request, *args, **kwargs):
         event = None
         payload = request.body
