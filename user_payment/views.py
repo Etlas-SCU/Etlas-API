@@ -32,10 +32,11 @@ class StripeWebhook(views.APIView):
         if event['type'] == 'checkout.session.completed':
             session = event['data']['object']
 
-            user = UserPayment.objects.get(stripe_checkout_id=session['id'])
-            line_items = stripe.checkout.Session.list_line_items(session['id'], limit=1)
-            user.payment_bool = True
-            user.save()
+            user_payment = UserPayment.objects.get(stripe_checkout_id=session['id'])
+            user_payment.payment_bool = True
+            user_payment.save()
+            user = user_payment.app_user
+            user.scans_left = 5
 
         return Response(status=200)
 

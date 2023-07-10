@@ -55,6 +55,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     auth_provider = models.CharField(max_length=255, blank=False, null=False, default=AUTH_PROVIDERS.get('email'))
+    scans_left = models.IntegerField(default=5)
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['full_name']
