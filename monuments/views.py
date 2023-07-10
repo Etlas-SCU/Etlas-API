@@ -3,6 +3,7 @@ import numpy as np
 from PIL import Image
 from rest_framework import generics, status
 from rest_framework.parsers import MultiPartParser, FormParser
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from roboflow import Roboflow
@@ -39,6 +40,7 @@ class MonumentDetailView(generics.RetrieveAPIView):
 
 class MonumentDetectionView(APIView):
     parser_classes = (MultiPartParser, FormParser)
+    permission_classes = [IsAuthenticated]
 
     def post(self, request, *args, **kwargs):
         if request.user.scans_left <= 0:
