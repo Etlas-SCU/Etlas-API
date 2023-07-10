@@ -41,6 +41,11 @@ class MonumentDetectionView(APIView):
     parser_classes = (MultiPartParser, FormParser)
 
     def post(self, request, *args, **kwargs):
+        if request.user.scans_left <= 0:
+            return Response({'status': 'You have no scans left'}, status=status.HTTP_403_FORBIDDEN)
+        request.user.scans_left -= 1
+        request.user.save()
+
         serializer = ImageSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         image_file = request.FILES['image']
