@@ -30,7 +30,7 @@ class StripeWebhook(views.APIView):
         if event['type'] == 'checkout.session.completed':
             session = event['data']['object']
 
-            user_payment = UserPayment.objects.get(app_user=request.user)
+            user_payment = UserPayment.objects.get(stripe_checkout_id=session['id'])
             user_payment.payment_bool = True
             user_payment.save()
             user = user_payment.app_user
