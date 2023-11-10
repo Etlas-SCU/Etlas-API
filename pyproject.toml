@@ -34,6 +34,7 @@ opencv-python = "^4.7.0.72"
 psycopg2-binary = "^2.9.6"
 django-celery-beat = "^2.5.0"
 stripe = "^5.4.0"
+setuptools = "^68.2.2"
 
 
 [build-system]
